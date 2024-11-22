@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart' ;
+import "dart:io" ;
+import 'package:image_picker/image_picker.dart';
 import 'package:my_flutter_app/pages/post_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -9,6 +11,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final ImagePicker _picker = ImagePicker();
+  File? image ;
 
   // paxi chaina sakxqa
   bool isliked = false ;
@@ -54,6 +58,34 @@ class _HomePageState extends State<HomePage> {
       isliked = !isliked ;
     });
   }
+
+  Future _galleryOption() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery) ;
+
+    if (pickedFile != null) {
+      setState(() {
+        image = File(pickedFile.path) ;
+      });
+    }
+  }
+
+  // Future _postComment() {
+  //   return showDialog(
+  //     context: context,
+  //     builder: (context) => Dialog(
+  //       child: Align(
+  //         alignment: Alignment.bottomLeft,
+  //         child: Container(
+  //           height:100,
+  //           width: 300,
+  //           decoration: BoxDecoration(
+  //             color: Colors.grey,
+  //           )
+  //         ),
+  //       ),
+  //     ),
+  //   ) ;
+  // }
 
   Widget _returnQuery(String name, String photo, String leaf, String description, bool isliked) {
     return Padding(
@@ -111,41 +143,90 @@ class _HomePageState extends State<HomePage> {
                       ),
                   ),
                 ),
-                // IconButton(
-                //   onPressed: () {
-                //     showDialog(
-                //       context: context, 
-                //       builder: (BuildContext context) {
-                //         return AlertDialog(
-                //           title: Text("Comment Section"), 
-                //           content: Column(
-                //             children: [
 
-                //             ],
-                //           ),
-                //           actions: [
-                //             TextButton(
-                //               onPressed: () {
-                //                 Navigator.of(context).pop() ;
-                //               }, 
-                //               child: const Text("Post")
-                //             ),
-                //             TextButton(
-                //               onPressed: () {
-                //                 Navigator.of(context).pop() ;
-                //               }, 
-                //               child: const Text("OK")
-                //             )
-                //           ],
-                //         ) ;
-                //       }
-                //     ) ;
-                //   },
-                //   icon: const Icon(Icons.comment)
-                // ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const PostPage())) ;
+                    showDialog(
+                      context: context, 
+                      builder: (context) => Dialog(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50) ,
+                            color: Colors.white,
+                          ),
+                          height: 600,
+                          width: 400,
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).pop() ;
+                                  }, 
+                                  child: const Icon(Icons.keyboard_backspace_rounded, size: 28)
+                                ),
+
+                                const SizedBox(height: 20),
+
+                                Container(
+                                  height: 400,
+                                  width: 400,
+                                  color: Colors.grey,
+                                ),
+
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 10.0, left: 5),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        height: 70,
+                                        width: 270,
+                                        child: const TextField(
+                                          decoration: InputDecoration(
+                                            hintText: "Type a comment.. ",
+                                            border: OutlineInputBorder(),
+                                          ),
+                                        ),
+                                      ),
+
+                                      Padding(
+                                        padding: const EdgeInsets.only(left:10.0),
+                                        child: GestureDetector(
+                                          onTap: _galleryOption, 
+                                          child: const Icon(Icons.add_a_photo,
+                                            size: 30,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: MaterialButton(
+                                    color: Colors.green,
+                                    hoverColor: Colors.lightGreenAccent,
+                                    onPressed: () {
+                                      Navigator.of(context).pop() ;
+                                      //_postComment ;
+                                    },
+                                    child: const Text("Post",
+                                      style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                      )
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                    ) ;
                   },
                   child: const Icon(Icons.comment), 
                 )

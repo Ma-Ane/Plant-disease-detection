@@ -11,7 +11,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _profileOptions (String name, IconData icon) {
     return Padding(
-      padding: const EdgeInsets.only(bottom:10.0),
+      padding: const EdgeInsets.only(bottom:15.0),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -77,7 +77,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ), 
 
           Padding(
-            padding: EdgeInsets.only(top:screenHeight * 0.36),
+            padding: EdgeInsets.only(top:screenHeight * 0.36, left: 10, right:10),
             child: Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
@@ -86,7 +86,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   topRight: Radius.circular(20),
                 )
               ),
-              height: 500,
+              height: 520,
               width: double.infinity,
               child: Column(
                 children: [
@@ -100,27 +100,27 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
           
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-              padding: EdgeInsets.only(right: screenWidth * 0.06),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Icon(Icons.logout, size: 28),
+          // Align(
+          //   alignment: Alignment.bottomRight,
+          //   child: Padding(
+          //     padding: EdgeInsets.only(right: screenWidth * 0.06),
+          //     child: const Row(
+          //       mainAxisAlignment: MainAxisAlignment.end,
+          //       children: [
+          //         Icon(Icons.logout, size: 28),
                   
-                  SizedBox(width: 15),
+          //         SizedBox(width: 15),
                   
-                  Text("Log out",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600
-                    ),  
-                  ),
-                ],
-              ),
-            ),
-          ),
+          //         Text("Log out",
+          //           style: TextStyle(
+          //             fontSize: 24,
+          //             fontWeight: FontWeight.w600
+          //           ),  
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

@@ -47,13 +47,16 @@ class _FrontPageState extends State<FrontPage> {
       
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.network("https://th.bing.com/th/id/OIP.jlUlTKEqUx_rddsIkLQwcAHaFj?rs=1&pid=ImgDetMain"),
-          
+          Image.asset('images/logo.jpg'),
+
           const SizedBox(height: 70),
 
           // sign in button
-          MyButton(text: "Sign In", onPressed: signIn),
+          Align(
+            alignment: Alignment.center,
+            child: MyButton(text: "Sign In", onPressed: signIn)),
 
           // register button
           MyButton(text: "Register", onPressed: register),

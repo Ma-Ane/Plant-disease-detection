@@ -11,6 +11,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final Color primaryColor = const Color(0xFFA6BC36); 
+  final Color secondaryColor = const Color(0xFF3498DB);
+  final Color thirdColor = const Color(0xFFAFD06E); 
+
   final ImagePicker _picker = ImagePicker();
   File? image ;
 
@@ -92,20 +96,26 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.only(top:10.0, left: 10, right: 10),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.lightGreenAccent,
+          color: primaryColor,
           borderRadius: BorderRadius.circular(10)
         ),
         height: 253,                // height aaba content ko length ma depend garxa
         width: double.infinity,
         child: Column(
           children: [
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top:15.0, left: 10, right: 10),
-                  child: _returnUserData(name, photo),
-                ),
-              ],
+            Container(
+              decoration: BoxDecoration(
+                color: thirdColor,
+                borderRadius: BorderRadius.circular(10)
+              ),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 5, top:15, left: 10, right: 10),
+                    child: _returnUserData(name, photo),
+                  ),
+                ],
+              ),
             ),
 
             Row(
@@ -113,8 +123,8 @@ class _HomePageState extends State<HomePage> {
                 Padding(
                   padding: const EdgeInsets.only(top:0.0, left: 20),
                   child: Container(
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 169, 245, 77),
+                    decoration: BoxDecoration(
+                      color: secondaryColor,//Color.fromARGB(255, 169, 245, 77),
                     ),
                     height: 100,
                     width: 250,
@@ -250,7 +260,7 @@ class _HomePageState extends State<HomePage> {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: Colors.lightGreenAccent,
+                color: Color(0xFFAFD06E),
               ),
               height: 140,
               width: double.infinity,

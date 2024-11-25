@@ -14,6 +14,9 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+    final Color primaryColor = Color(0xFFA6BC36); // Hex color for blue
+  final Color secondaryColor = Color(0xFF3498DB); // Hex color for blue
+  final Color thirdColor = Color(0xFF3498DB); 
 
   int _selectedIndex = 2 ;
 
@@ -50,16 +53,17 @@ class _MainPageState extends State<MainPage> {
               height: double.infinity,
               width: double.infinity,
 
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
+                color: primaryColor,
                 // edi color use garne bhaye
-                gradient: LinearGradient(
-                  colors:[
-                    Color(0xFF17E0BC),
-                    Color(0xFF98CE00),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
+                // // gradient: LinearGradient(
+                // //   colors:[
+                // //     Color(0xFF17E0BC),
+                // //     Color(0xFF98CE00),
+                // //   ],
+                // //   begin: Alignment.topLeft,
+                // //   end: Alignment.bottomRight,
+                // // )
 
               // edi image uyse garne bhayee
                 // image: DecorationImage(

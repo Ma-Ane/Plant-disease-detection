@@ -11,6 +11,10 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  final Color primaryColor = const Color(0xFFA6BC36); 
+  final Color secondaryColor = const Color(0xFF3498DB);
+  final Color thirdColor = const Color(0xFFAFD06E); 
+
     final ImagePicker _picker = ImagePicker();
     File? image ;
 
@@ -45,6 +49,8 @@ class _SearchPageState extends State<SearchPage> {
           padding: EdgeInsets.only(top: screenHeight * 0.05, left: screenWidth * 0.05, right: screenWidth * 0.05),
           child: Stack(
             children: [
+              // yo sayaddd container chaidaina holaa 
+            
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
@@ -57,14 +63,25 @@ class _SearchPageState extends State<SearchPage> {
                           height: 300, 
                           width: 500, 
                           fit: BoxFit.cover) : 
-                        const Align(
+                        Align(
                           alignment: Alignment.center,
-                          child: Text("Camera Photo",
-                            style: TextStyle(
-                              fontSize: 23,
-                              fontWeight: FontWeight.w400
-                            )
-                          )
+                            child: MaterialButton(
+                              onPressed: _galleryOption,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            
+                              height: 300,
+                              minWidth: 500,
+                              color: thirdColor,
+                              child: const Icon(Icons.photo_camera, size: 100),
+                            ),
+                          // child: Text("Camera Photo",
+                          //   style: TextStyle(
+                          //     fontSize: 23,
+                          //     fontWeight: FontWeight.w400
+                          //   )
+                          // )
                           ),
               ),
             ],
@@ -73,23 +90,23 @@ class _SearchPageState extends State<SearchPage> {
     
         const SizedBox(height: 40),
     
-        Align(
-          alignment: Alignment.centerRight,
-          child: Padding(
-              padding: EdgeInsets.only(right: screenWidth * 0.15),
-              child: MaterialButton(
-                onPressed: _galleryOption,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
+        // Align(
+        //   alignment: Alignment.centerRight,
+        //   child: Padding(
+        //       padding: EdgeInsets.only(right: screenWidth * 0.15),
+        //       child: MaterialButton(
+        //         onPressed: _galleryOption,
+        //         shape: RoundedRectangleBorder(
+        //           borderRadius: BorderRadius.circular(20),
+        //         ),
               
-                height: 50,
-                minWidth: 50,
-                color: const Color.fromARGB(255, 226, 210, 246),
-                child: const Icon(Icons.photo_camera),
-              ),
-            ),
-        ),
+        //         height: 50,
+        //         minWidth: 50,
+        //         color: const Color.fromARGB(255, 226, 210, 246),
+        //         child: const Icon(Icons.photo_camera),
+        //       ),
+        //     ),
+        // ),
 
         Align(
           alignment: Alignment.center,

@@ -18,7 +18,7 @@ class _MainPageState extends State<MainPage> {
   final Color secondaryColor = Color(0xFF3498DB); // Hex color for blue
   final Color thirdColor = Color(0xFF3498DB); 
 
-  int _selectedIndex = 2 ;
+  int _selectedIndex = 1 ;
 
   void _onItemTapped (int index) {
     setState(() {

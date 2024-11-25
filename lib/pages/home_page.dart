@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.only(top:10.0, left: 10, right: 10),
       child: Container(
         decoration: BoxDecoration(
-          color: primaryColor,
+          color: thirdColor,
           borderRadius: BorderRadius.circular(10)
         ),
         height: 253,                // height aaba content ko length ma depend garxa
@@ -105,8 +105,11 @@ class _HomePageState extends State<HomePage> {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: thirdColor,
-                borderRadius: BorderRadius.circular(10)
+                color: secondaryColor,
+                borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(10),
+            topRight: Radius.circular(10),
+          )
               ),
               child: Row(
                 children: [
@@ -118,27 +121,30 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top:0.0, left: 20),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: secondaryColor,//Color.fromARGB(255, 169, 245, 77),
-                    ),
-                    height: 100,
-                    width: 250,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(description),
+            Padding(
+              padding: const EdgeInsets.only(top:10.0),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top:0.0, left: 20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: secondaryColor,//Color.fromARGB(255, 169, 245, 77),
+                      ),
+                      height: 100,
+                      width: 250,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(description),
+                      ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left:20.0),
-                  child: _queryPhoto(leaf),
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.only(left:20.0),
+                    child: _queryPhoto(leaf),
+                  ),
+                ],
+              ),
             ),
 
             // comment ra like button ko lagi

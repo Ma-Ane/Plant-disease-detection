@@ -15,10 +15,11 @@ class SignIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF5D2F27),
+      backgroundColor: Color.fromARGB(255, 52, 66, 80),
       appBar: AppBar(
-        title: const Text("Sign In"),
-        backgroundColor: const Color(0xFF5D2F27),
+        iconTheme: IconThemeData(color: Colors.white),
+        title: const Text("Sign In", style: TextStyle(color: Colors.white),),
+        backgroundColor: Color.fromARGB(255, 52, 66, 80),
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 150),

@@ -20,7 +20,7 @@ class MyButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
         ),
         onPressed: onPressed,
-        color: const Color.fromARGB(255, 192, 231, 225),
+        color: Color(0xFFB4d3b2),
         height: 45,
         minWidth: 200,
         child: Text(

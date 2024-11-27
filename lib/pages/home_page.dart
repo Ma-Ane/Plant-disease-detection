@@ -11,21 +11,25 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final Color primaryColor = const Color(0xFFA6BC36); 
-  final Color secondaryColor = const Color(0xFF3498DB);
-  final Color thirdColor = const Color(0xFFAFD06E); 
+  final Color homepageBackground = const Color(0xFF83a84f); 
+  final Color homepageback = const Color(0xFF547027);
+  final Color homepageTextbg = const Color(0xFFAFD06E); 
 
   final ImagePicker _picker = ImagePicker();
   File? image ;
 
   // paxi chaina sakxqa
+  // like button
   bool isliked = false ;
 
   void name() {}
 
+  // user ko naam ra profile pic
   Widget _returnUserData(String userName, String userPic) {
     return Row(
       children: [
+        
+        // clivoval le photo lai round banauxa
         ClipOval(
           child: Image.asset(userPic, 
                   fit: BoxFit.cover,
@@ -36,6 +40,7 @@ class _HomePageState extends State<HomePage> {
 
         const SizedBox(width: 30),
 
+        // user name
         Text(userName, 
           style: const TextStyle(
             fontSize: 22,
@@ -45,7 +50,10 @@ class _HomePageState extends State<HomePage> {
     );   
   }
 
+  // esle query ko photo return garxa.. bhaneko leaf ko photo
   Widget _queryPhoto(String leaf) {
+
+    // clipreact user gareraa border radius rakheko
     return ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: Image.asset(leaf,
@@ -63,6 +71,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  // gallery kholne aafno mob ko
   Future _galleryOption() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery) ;
 
@@ -73,72 +82,89 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // Future _postComment() {
-  //   return showDialog(
-  //     context: context,
-  //     builder: (context) => Dialog(
-  //       child: Align(
-  //         alignment: Alignment.bottomLeft,
-  //         child: Container(
-  //           height:100,
-  //           width: 300,
-  //           decoration: BoxDecoration(
-  //             color: Colors.grey,
-  //           )
-  //         ),
-  //       ),
-  //     ),
-  //   ) ;
-  // }
 
+  // esle euta query return garxa pura box
   Widget _returnQuery(String name, String photo, String leaf, String description, bool isliked) {
     return Padding(
       padding: const EdgeInsets.only(top:10.0, left: 10, right: 10),
+
+      // euta query ko lagi container
       child: Container(
-        decoration: BoxDecoration(
-          color: thirdColor,
+
+        // tyo container ko property
+         decoration: BoxDecoration(
+          // edi color use garne bhaye
+          gradient: const RadialGradient(
+            radius: 2.5,
+            colors:[
+              Color.fromARGB(255, 52, 66, 80),
+              Color.fromARGB(255, 15, 26, 21),
+              Color.fromARGB(255, 76, 86, 96),
+            ],
+          ),
           borderRadius: BorderRadius.circular(10)
         ),
         height: 253,                // height aaba content ko length ma depend garxa
         width: double.infinity,
+
+        // container bhitra euta column , euta user data ko lagi euta query ko lagi
         child: Column(
           children: [
+
+            // user ko pic ra naam bhako wala container 
             Container(
-              decoration: BoxDecoration(
-                color: secondaryColor,
-                borderRadius: const BorderRadius.only(
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 63, 155, 104),
+                borderRadius:  BorderRadius.only(
             topLeft: Radius.circular(10),
             topRight: Radius.circular(10),
           )
               ),
+
+              // container ma euta row for name and pic
               child: Row(
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5, top:15, left: 10, right: 10),
+
+                    // esle chai db bata naam ra photo linxa
                     child: _returnUserData(name, photo),
                   ),
                 ],
               ),
             ),
 
+            // yo chaidescription ra leaf ko pic ko lagi
             Padding(
               padding: const EdgeInsets.only(top:10.0),
+
+              // description ra leaf ali euta row ma rakheko
               child: Row(
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top:0.0, left: 20),
+
+                    // row bhitra euta container for description
                     child: Container(
                       decoration: BoxDecoration(
-                        color: secondaryColor,//Color.fromARGB(255, 169, 245, 77),
+                        color:  const Color.fromARGB(0, 0, 0, 0),//Color.fromARGB(255, 169, 245, 77),
                       ),
                       height: 100,
                       width: 250,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(description),
+
+                        // db bata linee
+                        child: Text(description
+                        , style: TextStyle(
+                          color: Colors.white
+                        )),
                       ),
                     ),
                   ),
+
+                  // yo chai photo lai milauna ko lagi left side ma
+                  // eslai responsibe banuanee
                   Padding(
                     padding: const EdgeInsets.only(left:20.0),
                     child: _queryPhoto(leaf),
@@ -147,6 +173,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
+            // eslaii db sangai link ani sabai query lai link bhako hataune
             // comment ra like button ko lagi
             Row(
               children: [
@@ -154,17 +181,24 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.only(left:20.0, right: 20),
                   child: GestureDetector(
                     onTap: toggleLike,
+
+                    // like ko button change garna ko lagi
                     child: Icon(isliked ? Icons.favorite : Icons.favorite_border, 
-                        size: 28
+                        size: 28, color: Color.fromARGB(255, 212, 113, 104),
                       ),
                   ),
                 ),
 
+                // yo ta comment box ko lagii
                 GestureDetector(
                   onTap: () {
                     showDialog(
                       context: context, 
+
+                      // euta dialog box
                       builder: (context) => Dialog(
+
+                        // bahira ko container 
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50) ,
@@ -174,9 +208,13 @@ class _HomePageState extends State<HomePage> {
                           width: 400,
                           child: Padding(
                             padding: const EdgeInsets.all(12.0),
+
+                            // column sabaii icon haru ko lagi
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+
+                                // yoo back button ho
                                 GestureDetector(
                                   onTap: () {
                                     Navigator.of(context).pop() ;
@@ -186,14 +224,18 @@ class _HomePageState extends State<HomePage> {
 
                                 const SizedBox(height: 20),
 
+                                // yo main box comment haru herne
                                 Container(
                                   height: 400,
                                   width: 400,
                                   color: Colors.grey,
                                 ),
 
+                                // yo aafno comment type garne
                                 Padding(
                                   padding: const EdgeInsets.only(top: 10.0, left: 5),
+
+                                  // row for comment lekhne ani photo icon
                                   child: Row(
                                     children: [
                                       Container(
@@ -201,7 +243,7 @@ class _HomePageState extends State<HomePage> {
                                         width: 270,
                                         child: const TextField(
                                           decoration: InputDecoration(
-                                            hintText: "Type a comment.. ",
+                                            hintText: "Type a comment...",
                                             border: OutlineInputBorder(),
                                           ),
                                         ),
@@ -220,6 +262,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
 
+                                // post button 
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: MaterialButton(
@@ -244,7 +287,7 @@ class _HomePageState extends State<HomePage> {
                       )
                     ) ;
                   },
-                  child: const Icon(Icons.comment), 
+                  child: const Icon(Icons.comment,color: Color.fromARGB(255, 87, 143, 93),), 
                 )
               ],
             ),
@@ -256,9 +299,12 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // yo chai ali milaunu parxa hola haii query haru lai ramrarii dekhaunaa
     return ListView.builder(
       itemCount: 1,       // esle tala bhako sabai content ek choti matrai dekhauxaa
       itemBuilder: (context, index){ 
+
+      // overall container pura screen ko lagi
       return Column(
         children: [
           Padding(
@@ -266,24 +312,28 @@ class _HomePageState extends State<HomePage> {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: Color(0xFFAFD06E),
+                color: const Color.fromARGB(255, 63, 155, 104),
               ),
               height: 140,
               width: double.infinity,
+
+              // bhitra ko column aafno info ko 
               child: Column(
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top:8.0, left: 10),
                     child: Row(
+                      // yo naam ra pic ko lagi
                       children: [
                         _returnUserData("Manjit Maharjan", "images/profile_pic.jpg"),
       
                         const SizedBox(width: 50),
-      
+
+                        // yo chai plus button forposting
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50),
-                            color: Colors.lightGreen,
+                            color: Color(0xFFB4d3b2),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(6.0),
@@ -298,6 +348,8 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
+
+                  // yo post your query bhako wala box ra icon
                   Padding(
                     padding: const EdgeInsets.only(top:20.0, bottom: 10, left: 20),
                     child: Row(
@@ -305,7 +357,7 @@ class _HomePageState extends State<HomePage> {
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            color: Colors.lightGreen
+                            color: Color(0xFFB4d3b2)
                           ),
                           height: 45,
                           width: 280,
@@ -321,10 +373,11 @@ class _HomePageState extends State<HomePage> {
                         ),
       
                         const SizedBox(width: 20),
-      
+
+                        // gallery icon
                         const Icon(Icons.photo_album,
                           size: 35,
-                          color: Colors.red,
+                          color: Color.fromARGB(255, 207, 216, 200),
                         )
                       ],
                     ),
@@ -333,6 +386,8 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
+
+        // eslee harek user ko query return garxxa
         _returnQuery("Ishan Ghimire", 'images/profile2.jpg', 'images/leaf1.jpg', "Hello, I have been using this app for quite a long time and think that this app is great and can help other users in identifying the disease and also provide some recommendations based on the result.", isliked),
         _returnQuery("Mandip Shrestha", 'images/profile3.jpg', 'images/leaf2.jpg', "Hello, I have been using this app for quite a long time and think that this app is great and can help other users in identifying the disease and also provide some recommendations based on the result.", isliked),
         _returnQuery("Jyoti Kumari Gupta", 'images/profile4.jpg', 'images/leaf3.jpg', "Hello, I have been using this app for quite a long time and think that this app is great and can help other users in identifying the disease and also provide some recommendations based on the result.", isliked),

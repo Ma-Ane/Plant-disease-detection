@@ -9,13 +9,15 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
 
-  Widget _profileOptions (String name, IconData icon) {
+  Widget _profileOptions (String name, IconData icon,BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height ;
+    double screenWidth = MediaQuery.of(context).size.width ;
     return Padding(
-      padding: const EdgeInsets.only(bottom:15.0),
+      padding:  EdgeInsets.only(bottom:screenHeight * 0.02),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: const Color.fromARGB(255, 168, 244, 82),
+          color: const Color.fromARGB(255, 63, 155, 104),
         ),      
         height: 88,
         width: double.infinity,
@@ -44,14 +46,15 @@ class _ProfilePageState extends State<ProfilePage> {
     double screenHeight = MediaQuery.of(context).size.height ;
     double screenWidth = MediaQuery.of(context).size.width ;
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 52, 66, 80),
       body: Stack(
         children: [
           Container(
-            color: Colors.white,
+            color: Color.fromARGB(255, 52, 66, 80),
             height: 320,
             width: double.infinity,
             child: Padding(
-              padding: const EdgeInsets.only(top: 40.0),
+              padding: EdgeInsets.only(top: screenHeight * 0.04),
               child: Column(
                 children: [
                   SizedBox(height: screenHeight * 0.03),
@@ -59,8 +62,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   ClipOval(
                     child: Image.asset('images/profile_pic.jpg', 
                               fit: BoxFit.cover,
-                              height: 170,
-                              width: 170,
+                              height: screenWidth * 0.25,
+                              width: screenWidth * 0.25,
                     ), 
                   ),
               
@@ -68,6 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   const Text("Manjit Maharjan",
                     style: TextStyle(
+                      color: Colors.white,
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                     ),),
@@ -77,24 +81,24 @@ class _ProfilePageState extends State<ProfilePage> {
           ), 
 
           Padding(
-            padding: EdgeInsets.only(top:screenHeight * 0.36, left: 10, right:10),
+            padding: EdgeInsets.only(top:screenHeight * 0.31, left: 10, right:10),
             child: Container(
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: Color.fromARGB(255, 52, 66, 80),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                 )
               ),
-              height: 520,
+              height: double.infinity,
               width: double.infinity,
               child: Column(
                 children: [
-                  _profileOptions("Edit", Icons.edit),
-                  _profileOptions("Help", Icons.help),
-                  _profileOptions("History", Icons.history),
-                  _profileOptions("Contact Us", Icons.contact_mail),
-                  _profileOptions("Settings", Icons.settings),
+                  _profileOptions("Edit", Icons.edit,context),
+                  _profileOptions("Help", Icons.help,context),
+                  _profileOptions("History", Icons.history,context),
+                  _profileOptions("Contact Us", Icons.contact_mail,context),
+                  _profileOptions("Settings", Icons.settings,context),
                 ]
               ),
             ),

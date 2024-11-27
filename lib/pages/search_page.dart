@@ -18,6 +18,7 @@ class _SearchPageState extends State<SearchPage> {
     final ImagePicker _picker = ImagePicker();
     File? image ;
 
+  // gallery bata photo upload garna ko lagi
   Future _galleryOption() async {
      final pickedFile = await _picker.pickImage(source: ImageSource.gallery) ;
 
@@ -30,6 +31,8 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    // kun mob bata open gareko tesko height ra weight use gareko
     double screenHeight = MediaQuery.of(context).size.height ;
     double screenWidth = MediaQuery.of(context).size.width ;
 
@@ -37,8 +40,11 @@ class _SearchPageState extends State<SearchPage> {
       children: [
         Padding(
           padding: EdgeInsets.only(top:screenHeight * 0.1, left: screenWidth * 0.05, right: screenWidth * 0.05),
+
+          // heading text
           child: const Text("Upload Picture for Disease Detection.",
             style: TextStyle(
+              color: Colors.white,
               fontSize: 27,
               fontWeight: FontWeight.w700,
             )
@@ -47,22 +53,28 @@ class _SearchPageState extends State<SearchPage> {
     
         Padding(
           padding: EdgeInsets.only(top: screenHeight * 0.05, left: screenWidth * 0.05, right: screenWidth * 0.05),
+
+          // stack use gareko tyoo container ra camera icon lai maathi rakhna
           child: Stack(
             children: [
-              // yo sayaddd container chaidaina holaa 
-            
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: Colors.lightGreen[400],
+                  //color: Colors.white,
                 ),
                 height: 300,
                 width: 500,
+
+                // yo chai yedi image xa bhaye image rakhne.. na bhaye ma camera icon
                 child: image != null ? 
+
+                        // image ko property
                         Image.file(image!,
                           height: 300, 
                           width: 500, 
                           fit: BoxFit.cover) : 
+
+                        // camera button lai milako
                         Align(
                           alignment: Alignment.center,
                             child: MaterialButton(
@@ -73,7 +85,7 @@ class _SearchPageState extends State<SearchPage> {
                             
                               height: 300,
                               minWidth: 500,
-                              color: thirdColor,
+                              color: const Color.fromARGB(255, 63, 155, 104),
                               child: const Icon(Icons.photo_camera, size: 100),
                             ),
                           // child: Text("Camera Photo",
@@ -90,26 +102,11 @@ class _SearchPageState extends State<SearchPage> {
     
         const SizedBox(height: 40),
     
-        // Align(
-        //   alignment: Alignment.centerRight,
-        //   child: Padding(
-        //       padding: EdgeInsets.only(right: screenWidth * 0.15),
-        //       child: MaterialButton(
-        //         onPressed: _galleryOption,
-        //         shape: RoundedRectangleBorder(
-        //           borderRadius: BorderRadius.circular(20),
-        //         ),
-              
-        //         height: 50,
-        //         minWidth: 50,
-        //         color: const Color.fromARGB(255, 226, 210, 246),
-        //         child: const Icon(Icons.photo_camera),
-        //       ),
-        //     ),
-        // ),
-
+        // yo chai detect button 
         Align(
           alignment: Alignment.center,
+
+          // yedi image select gareko xiana bhaye select image bhanera message aauxa
           child: MaterialButton(
             onPressed: () {
               image == null ?
@@ -131,6 +128,8 @@ class _SearchPageState extends State<SearchPage> {
                     ) ;
                   }
                 ) :
+
+                // yedi image xa bhayee aarko page ma change gar
                 Navigator.push(context, MaterialPageRoute(builder: (context) => AfterDetection(image: image))) ;
             },
             shape: RoundedRectangleBorder(
@@ -138,7 +137,9 @@ class _SearchPageState extends State<SearchPage> {
             ),
             height: screenHeight * 0.05,
             minWidth: screenWidth * 0.1,
-            color: const Color.fromARGB(255, 226, 210, 246),
+
+            // color for button
+            color: Color(0xFFB4d3b2),
             child: const Padding(
               padding: EdgeInsets.all(10.0),
               child: Text("Detect",

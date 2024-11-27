@@ -43,6 +43,7 @@ class _RegisterState extends State<Register> {
           padding: const EdgeInsets.only(left:5.0),
           child: Text(label,
             style: const TextStyle(
+              color: Color.fromARGB(255, 173, 204, 217),
               fontSize: 20,
               fontWeight: FontWeight.bold,
             )
@@ -105,15 +106,7 @@ class _RegisterState extends State<Register> {
       body: Container(
         decoration: const BoxDecoration(
           // edi color use garne bhaye
-          gradient: LinearGradient(
-            colors:[
-              Color(0xFF17E0BC),
-              Color(0xFF98CE00),
-              Color.fromARGB(255, 80, 228, 21),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          )
+          color: Color.fromARGB(255, 52, 66, 80)
         ),
         child: Column(
             children: [
@@ -121,7 +114,7 @@ class _RegisterState extends State<Register> {
                 padding: EdgeInsets.only(top:80.0),
                 child: Text("Registration Page",
                   style: TextStyle(
-                    color: Color.fromARGB(255, 33, 101, 108),
+                    color: Color.fromARGB(255, 173, 204, 217),
                     fontSize: 27,
                     fontWeight: FontWeight.bold,
                   )
@@ -132,6 +125,7 @@ class _RegisterState extends State<Register> {
         
               const Text("Please provide the following information.",
                 style: TextStyle(
+                  color: Color.fromARGB(255, 173, 204, 217),
                   //color: Color.fromARGB(255, 175, 76, 69),
                   fontSize: 21,
                   fontWeight: FontWeight.w900,
@@ -152,7 +146,8 @@ class _RegisterState extends State<Register> {
                     //crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       customInputField(
-                        label: "First Name",
+                        label:"First Name",
+                        
                         hintText: "KP",
                         controller: firstNameController
                       ),
@@ -177,10 +172,11 @@ class _RegisterState extends State<Register> {
                           // ),
         
                           DropdownButtonFormField(
-                            dropdownColor: const Color.fromARGB(255, 189, 239, 189),
+                            dropdownColor: const Color.fromARGB(255, 173, 204, 217),
                             value: _selectedGender,
                             hint: const Text('Choose your gender', 
                               style: TextStyle(
+                                color: Color.fromARGB(255, 173, 204, 217),
                                 fontWeight: FontWeight.bold,
                               )
                             ),
@@ -188,7 +184,7 @@ class _RegisterState extends State<Register> {
                                 .map((String gender) {
                                   return DropdownMenuItem(
                                     value: gender,
-                                    child: Text(gender),
+                                    child: Text(gender, style: const TextStyle(color: Color.fromARGB(255, 173, 204, 217))),
                                   );
                                 })
                                 .toList(),

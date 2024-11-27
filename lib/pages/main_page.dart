@@ -14,9 +14,9 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-    final Color primaryColor = Color(0xFFA6BC36); // Hex color for blue
-  final Color secondaryColor = Color(0xFF3498DB); // Hex color for blue
-  final Color thirdColor = Color(0xFF3498DB); 
+  final Color homepageBackground = const Color(0xFF83a84f); 
+  final Color homepageBubble = const Color(0xFF3498DB);
+  final Color homepageTextbg = const Color(0xFFAFD06E); 
 
   int _selectedIndex = 1 ;
 
@@ -46,15 +46,15 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Main Page'),
-      // ),
+      appBar: AppBar(
+         title: const Text('Main Page'),
+       ),
       body: Container(
               height: double.infinity,
               width: double.infinity,
 
-              decoration: BoxDecoration(
-                color: primaryColor,
+              decoration:const BoxDecoration(
+                color: Color.fromARGB(255, 52, 66, 80),
                 // edi color use garne bhaye
                 // // gradient: LinearGradient(
                 // //   colors:[

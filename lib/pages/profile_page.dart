@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' ;
+import 'package:my_flutter_app/pages/help.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -9,32 +10,35 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
 
-  Widget _profileOptions (String name, IconData icon,BuildContext context) {
+  Widget _profileOptions (String name, IconData icon, BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height ;
     double screenWidth = MediaQuery.of(context).size.width ;
     return Padding(
       padding:  EdgeInsets.only(bottom:screenHeight * 0.02),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: const Color.fromARGB(255, 63, 155, 104),
-        ),      
-        height: 88,
-        width: double.infinity,
-        child: Row(
-          children: [
-            const SizedBox(width: 20),
-
-            Icon(icon, size: 33,),
-
-            const SizedBox(width: 40),
-
-            Text(name,
-              style: const TextStyle(
-                fontSize: 23,
-                fontWeight: FontWeight.w500,
-              ))
-          ],
+      child: GestureDetector(
+        onTap: () => {Navigator.push(context, MaterialPageRoute(builder: (context) => const Help()))},
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: const Color.fromARGB(255, 63, 155, 104),
+          ),      
+          height: 88,
+          width: double.infinity,
+          child: Row(
+            children: [
+              const SizedBox(width: 20),
+        
+              Icon(icon, size: 33,),
+        
+              const SizedBox(width: 40),
+        
+              Text(name,
+                style: const TextStyle(
+                  fontSize: 23,
+                  fontWeight: FontWeight.w500,
+                ))
+            ],
+          ),
         ),
       ),
     ) ;
@@ -54,7 +58,7 @@ class _ProfilePageState extends State<ProfilePage> {
             height: 320,
             width: double.infinity,
             child: Padding(
-              padding: EdgeInsets.only(top: screenHeight * 0.04),
+              padding: EdgeInsets.only(top: screenHeight * 0.02),
               child: Column(
                 children: [
                   SizedBox(height: screenHeight * 0.03),
@@ -81,7 +85,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ), 
 
           Padding(
-            padding: EdgeInsets.only(top:screenHeight * 0.31, left: 10, right:10),
+            padding: EdgeInsets.only(top:screenHeight * 0.25, left: 10, right:10),
             child: Container(
               decoration: const BoxDecoration(
                 color: Color.fromARGB(255, 52, 66, 80),

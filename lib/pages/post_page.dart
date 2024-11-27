@@ -29,6 +29,7 @@ class _PostPageState extends State<PostPage> {
         Text(userName, 
           style: const TextStyle(
             fontSize: 22,
+            color: Colors.white
           )
         ),
       ],
@@ -53,24 +54,14 @@ class _PostPageState extends State<PostPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Post"),
+        backgroundColor: Color(0xff687d91),
       ),
       body: Stack(
         children: [
               Container(
                 height: double.infinity,
                 width: double.infinity,
-        
-                decoration: const BoxDecoration(
-                  // edi color use garne bhaye
-                  gradient: LinearGradient(
-                    colors:[
-                      Color(0xFF17E0BC),
-                      Color(0xFF98CE00),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  )
-                ),
+                color: const Color(0xFF344250),
                 child: Column(
                   children: [
                     Padding(
@@ -85,34 +76,74 @@ class _PostPageState extends State<PostPage> {
                         minLines: 1,
                         decoration: InputDecoration(
                           hintText: "Caption the Photo", 
+                          hintStyle: TextStyle(color: Color(0xffcfcfcf))
                         ),
                       ),
                     ),
                             
                     Padding(
                       padding: EdgeInsets.all(screenHeight * 0.05),
-                      child: Container(
-                        height: 300,
-                        width: 300,
-                        decoration: BoxDecoration(
-                          color: Colors.lightGreen[400],
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: MaterialButton(
-                                  //hoverColor: Colors.red,
-                                  onPressed: _addPhoto,
-                                  child: image != null ? 
-                                    Image.file(image!,
-                                      height: 300, 
-                                      width: 500, 
-                                      fit: BoxFit.cover
-                                    ) : 
-                                    const Align(
-                                      alignment: Alignment.center,
-                                      child: Icon(Icons.add, size: 50),
-                                    ),
+                      child:               Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  //color: Colors.white,
+                ),
+                height: 240,
+                width: 240,
+
+                // yo chai yedi image xa bhaye image rakhne.. na bhaye ma camera icon
+                child: image != null ? 
+
+                        // image ko property
+                        Image.file(image!,
+                          height: 240, 
+                          width: 240, 
+                          fit: BoxFit.cover) : 
+
+                        // camera button lai milako
+                        Align(
+                          alignment: Alignment.center,
+                            child: MaterialButton(
+                              onPressed: _addPhoto,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
                               ),
-                      ),
+                            
+                              height: 300,
+                              minWidth: 500,
+                              color: const Color.fromARGB(255, 63, 155, 104),
+                              child: const Icon(Icons.add_a_photo_rounded, size: 100),
+                            ),
+                          // child: Text("Camera Photo",
+                          //   style: TextStyle(
+                          //     fontSize: 23,
+                          //     fontWeight: FontWeight.w400
+                          //   )
+                          // )
+                          ),
+              ),
+                      // child: Container(
+                      //   height: 240,
+                      //   width: 240,
+                      //   decoration: BoxDecoration(
+                      //     color: Color(0xff3f9b68),
+                      //     borderRadius: BorderRadius.circular(20),
+                      //   ),
+                      //   child: MaterialButton(
+                      //             //hoverColor: Colors.red,
+                      //             onPressed: _addPhoto,
+                      //             child: image != null ? 
+                      //               Image.file(image!,
+                      //                 height: 240, 
+                      //                 width: 240, 
+                      //                 fit: BoxFit.cover
+                      //               ) : 
+                      //               const Align(
+                      //                 alignment: Alignment.center,
+                      //                 child: Icon(Icons.add, size: 50),
+                      //               ),
+                      //         ),
+                      // ),
                     ),
                   ],
                 ),
@@ -126,12 +157,14 @@ class _PostPageState extends State<PostPage> {
                 children: [
                   Text("Discard", 
                     style: TextStyle(
+                      color:Colors.white,
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                     )
                   ),
                   Text("Post",
                     style: TextStyle(
+                      color:Colors.white,
                       fontSize: 22, 
                       fontWeight: FontWeight.bold
                     )

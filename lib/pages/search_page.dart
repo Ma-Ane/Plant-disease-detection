@@ -62,16 +62,16 @@ class _SearchPageState extends State<SearchPage> {
                   borderRadius: BorderRadius.circular(20),
                   //color: Colors.white,
                 ),
-                height: 300,
-                width: 500,
+                height: 240,
+                width: 240,
 
                 // yo chai yedi image xa bhaye image rakhne.. na bhaye ma camera icon
                 child: image != null ? 
 
                         // image ko property
                         Image.file(image!,
-                          height: 300, 
-                          width: 500, 
+                          height: 240, 
+                          width: 240, 
                           fit: BoxFit.cover) : 
 
                         // camera button lai milako

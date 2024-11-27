@@ -51,15 +51,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   // esle query ko photo return garxa.. bhaneko leaf ko photo
-  Widget _queryPhoto(String leaf) {
-
+  Widget _queryPhoto(String leaf, BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height ;
     // clipreact user gareraa border radius rakheko
     return ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: Image.asset(leaf,
           fit: BoxFit.fill,
-          height: 140,
-          width: 120,  
+          height: screenHeight *0.12,
+          width: screenHeight * 0.12,  
         ),
       );
   }
@@ -84,7 +84,9 @@ class _HomePageState extends State<HomePage> {
 
 
   // esle euta query return garxa pura box
-  Widget _returnQuery(String name, String photo, String leaf, String description, bool isliked) {
+  Widget _returnQuery(BuildContext context, name, String photo, String leaf, String description, bool isliked) {
+    double screenHeight = MediaQuery.of(context).size.height ;
+    double screenWidth = MediaQuery.of(context).size.width ;
     return Padding(
       padding: const EdgeInsets.only(top:10.0, left: 10, right: 10),
 
@@ -104,7 +106,7 @@ class _HomePageState extends State<HomePage> {
           ),
           borderRadius: BorderRadius.circular(10)
         ),
-        height: 253,                // height aaba content ko length ma depend garxa
+        height: screenHeight * 0.25,                // height aaba content ko length ma depend garxa
         width: double.infinity,
 
         // container bhitra euta column , euta user data ko lagi euta query ko lagi
@@ -149,8 +151,8 @@ class _HomePageState extends State<HomePage> {
                       decoration: BoxDecoration(
                         color:  const Color.fromARGB(0, 0, 0, 0),//Color.fromARGB(255, 169, 245, 77),
                       ),
-                      height: 100,
-                      width: 250,
+                      height: screenHeight * 0.12,
+                      width: screenWidth * 0.55,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
 
@@ -167,7 +169,7 @@ class _HomePageState extends State<HomePage> {
                   // eslai responsibe banuanee
                   Padding(
                     padding: const EdgeInsets.only(left:20.0),
-                    child: _queryPhoto(leaf),
+                    child: _queryPhoto(leaf,context),
                   ),
                 ],
               ),
@@ -388,9 +390,9 @@ class _HomePageState extends State<HomePage> {
           ),
 
         // eslee harek user ko query return garxxa
-        _returnQuery("Ishan Ghimire", 'images/profile2.jpg', 'images/leaf1.jpg', "Hello, I have been using this app for quite a long time and think that this app is great and can help other users in identifying the disease and also provide some recommendations based on the result.", isliked),
-        _returnQuery("Mandip Shrestha", 'images/profile3.jpg', 'images/leaf2.jpg', "Hello, I have been using this app for quite a long time and think that this app is great and can help other users in identifying the disease and also provide some recommendations based on the result.", isliked),
-        _returnQuery("Jyoti Kumari Gupta", 'images/profile4.jpg', 'images/leaf3.jpg', "Hello, I have been using this app for quite a long time and think that this app is great and can help other users in identifying the disease and also provide some recommendations based on the result.", isliked),
+        _returnQuery(context, "Ishan Ghimire", 'images/profile2.jpg', 'images/leaf1.jpg', "Hello, I have been using this app for quite a long time and think that this app is great and can help other users in identifying the disease and also provide some recommendations based on the result.", isliked),
+        _returnQuery(context, "Mandip Shrestha", 'images/profile3.jpg', 'images/leaf2.jpg', "Hello, I have been using this app for quite a long time and think that this app is great and can help other users in identifying the disease and also provide some recommendations based on the result.", isliked),
+        _returnQuery(context, "Jyoti Kumari Gupta", 'images/profile4.jpg', 'images/leaf3.jpg', "Hello, I have been using this app for quite a long time and think that this app is great and can help other users in identifying the disease and also provide some recommendations based on the result.", isliked),
         ],
       ) ;
       }

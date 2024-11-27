@@ -51,6 +51,7 @@ class SignIn extends StatelessWidget {
                   controller: gmailControllerSignIn,
                   decoration: const InputDecoration(
                     hintText: "abcde@gmail.com",
+                    hintStyle: TextStyle(color: Colors.black26)
                       // label: Text('Email',
                       //   style: TextStyle(
                       //     fontWeight: FontWeight.bold,
@@ -73,6 +74,7 @@ class SignIn extends StatelessWidget {
                   decoration: const InputDecoration(
                     suffixIcon: Icon(Icons.visibility_off),
                     hintText: "123abcD@",
+                    hintStyle: TextStyle(color: Colors.black26)
                     // label: Text("Password",
                     //   style: TextStyle(
                     //     fontWeight: FontWeight.bold,

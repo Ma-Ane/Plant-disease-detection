@@ -65,6 +65,7 @@ class _RegisterState extends State<Register> {
             decoration: InputDecoration(
               //label: Text(label),
               hintText: hintText,
+              hintStyle: TextStyle(color: Colors.black26),
               border: InputBorder.none,
               icon: icon != null ? Icon(icon) : null,
             ),

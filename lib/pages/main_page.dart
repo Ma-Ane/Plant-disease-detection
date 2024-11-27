@@ -45,9 +45,11 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    var pagesmap= ['Search Page', 'Home Page', 'Profile Page'];
     return Scaffold(
       appBar: AppBar(
-         title: const Text('Main Page'),
+         title:  Text(pagesmap[_selectedIndex]),
+         backgroundColor: Color.fromARGB(255, 104, 125, 145),
        ),
       body: Container(
               height: double.infinity,
@@ -75,16 +77,12 @@ class _MainPageState extends State<MainPage> {
           child: _changeContentMainPage(_selectedIndex),
         ),
       ),
+      backgroundColor: const Color(0xff344250),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: const Border(
-              top: BorderSide(color: Colors.grey, width: 2), // Top border
-
-            ),
-            boxShadow: const [
+          decoration: const BoxDecoration(
+            boxShadow:  [
               BoxShadow(
                 color: Colors.black26,
                 offset: Offset(0, -1),
@@ -92,29 +90,33 @@ class _MainPageState extends State<MainPage> {
               ),
             ],
           ),
-          child: BottomNavigationBar(
-            currentIndex: _selectedIndex,
-            onTap: _onItemTapped,        // this is needed to change the index value
-            backgroundColor: Colors.green[50], // Background color of the bar
-            selectedItemColor: Colors.green,   // Color for the selected item
-            unselectedItemColor: Colors.grey, // Color for unselected items
-            showUnselectedLabels: true,       // Show labels for unselected items
-            elevation: 0,
-            type: BottomNavigationBarType.fixed,
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.search),
-                label: 'Search',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Profile',
-              ),
-            ],
+          child: ClipRRect(
+             borderRadius: const BorderRadius.all(Radius.circular(12)
+          ),
+            child: BottomNavigationBar(
+              currentIndex: _selectedIndex,
+              onTap: _onItemTapped,        // this is needed to change the index value
+              backgroundColor: Colors.green[50], // Background color of the bar
+              selectedItemColor: Colors.green,   // Color for the selected item
+              unselectedItemColor: Colors.grey, // Color for unselected items
+              showUnselectedLabels: true,       // Show labels for unselected items
+              elevation: 0,
+              type: BottomNavigationBarType.fixed,
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.search),
+                  label: 'Search',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person),
+                  label: 'Profile',
+                ),
+              ],
+            ),
           ),
         ),
       ),

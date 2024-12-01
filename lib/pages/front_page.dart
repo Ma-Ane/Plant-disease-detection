@@ -41,7 +41,7 @@ class _FrontPageState extends State<FrontPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF344250),
       appBar: AppBar(
-        backgroundColor: Color(0xff687d91),
+        backgroundColor: const Color(0xff687d91),
         title: const Text("Crop Disease Detection"),
         elevation: 0,
       ),

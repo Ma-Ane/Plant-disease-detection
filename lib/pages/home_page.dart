@@ -1,3 +1,5 @@
+//import 'dart:ffi';
+
 import 'package:flutter/material.dart' ;
 import "dart:io" ;
 import 'package:image_picker/image_picker.dart';
@@ -83,6 +85,37 @@ class _HomePageState extends State<HomePage> {
   }
 
 
+  // each comment lai dekhauxaa
+  Widget returnComment (double height, double width) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      // row for pic and comment
+      child: Row (
+        children: [
+          ClipOval(
+            child: Image.asset('images/profile2.jpg', height: height * 0.1,),
+          ),
+    
+          SizedBox(width: width * 0.02,),
+    
+          // comment
+          Container(
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 223, 209, 209),
+              borderRadius: BorderRadius.circular(50),
+            ),
+            height: height * 0.1,
+            width: width * 0.5,
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text("Very Nice Photo"),
+            ),
+          ),
+        ],
+      ),
+    ) ;
+  }
+
   // esle euta query return garxa pura box
   Widget _returnQuery(BuildContext context, name, String photo, String leaf, String description, bool isliked) {
     double screenHeight = MediaQuery.of(context).size.height ;
@@ -148,8 +181,8 @@ class _HomePageState extends State<HomePage> {
 
                     // row bhitra euta container for description
                     child: Container(
-                      decoration: BoxDecoration(
-                        color:  const Color.fromARGB(0, 0, 0, 0),//Color.fromARGB(255, 169, 245, 77),
+                      decoration: const BoxDecoration(
+                        color:  Color.fromARGB(0, 0, 0, 0),//Color.fromARGB(255, 169, 245, 77),
                       ),
                       height: screenHeight * 0.12,
                       width: screenWidth * 0.55,
@@ -158,7 +191,7 @@ class _HomePageState extends State<HomePage> {
 
                         // db bata linee
                         child: Text(description
-                        , style: TextStyle(
+                        , style: const TextStyle(
                           color: Colors.white
                         )),
                       ),
@@ -186,7 +219,7 @@ class _HomePageState extends State<HomePage> {
 
                     // like ko button change garna ko lagi
                     child: Icon(isliked ? Icons.favorite : Icons.favorite_border, 
-                        size: 28, color: Color.fromARGB(255, 212, 113, 104),
+                        size: 28, color: const Color.fromARGB(255, 212, 113, 104),
                       ),
                   ),
                 ),
@@ -206,8 +239,8 @@ class _HomePageState extends State<HomePage> {
                             borderRadius: BorderRadius.circular(50) ,
                             color: Colors.white,
                           ),
-                          height: 600,
-                          width: 400,
+                          height: screenHeight * 0.65,
+                          width: screenWidth * 0.9,
                           child: Padding(
                             padding: const EdgeInsets.all(12.0),
 
@@ -227,10 +260,25 @@ class _HomePageState extends State<HomePage> {
                                 const SizedBox(height: 20),
 
                                 // yo main box comment haru herne
-                                Container(
-                                  height: 400,
-                                  width: 400,
-                                  color: Colors.grey,
+                                SingleChildScrollView(
+                                  child: Container(
+                                    height: screenHeight * 0.4,
+                                    width: screenWidth * 0.9,
+                                    color: const Color.fromARGB(255, 189, 186, 186),
+                                  
+                                    // harek comment 
+                                    child: Column(
+                                      children: [
+                                        returnComment(screenHeight * 0.4, screenWidth * 0.9),
+                                  
+                                        returnComment(screenHeight * 0.4, screenWidth * 0.9),
+                                  
+                                        returnComment(screenHeight * 0.4, screenWidth * 0.9),
+                                        
+                                        returnComment(screenHeight * 0.4, screenWidth * 0.9),
+                                      ],
+                                    ),
+                                  ),
                                 ),
 
                                 // yo aafno comment type garne
@@ -335,7 +383,7 @@ class _HomePageState extends State<HomePage> {
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50),
-                            color: Color(0xFFB4d3b2),
+                            color: const Color(0xFFB4d3b2),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(6.0),
@@ -359,7 +407,7 @@ class _HomePageState extends State<HomePage> {
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            color: Color(0xFFB4d3b2)
+                            color: const Color(0xFFB4d3b2)
                           ),
                           height: 45,
                           width: 280,

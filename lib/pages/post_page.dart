@@ -54,7 +54,7 @@ class _PostPageState extends State<PostPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Post"),
-        backgroundColor: Color(0xff687d91),
+        backgroundColor: const Color(0xff687d91),
       ),
       body: Stack(
         children: [

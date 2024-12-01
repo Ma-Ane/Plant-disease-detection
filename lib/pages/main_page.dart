@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart' ;
-import 'package:my_flutter_app/pages/after_detection.dart';
+//import 'package:my_flutter_app/pages/after_detection.dart';
 import 'package:my_flutter_app/pages/home_page.dart';
 import 'package:my_flutter_app/pages/profile_page.dart';
 import 'package:my_flutter_app/pages/search_page.dart';
@@ -49,7 +49,7 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppBar(
          title:  Text(pagesmap[_selectedIndex]),
-         backgroundColor: Color.fromARGB(255, 104, 125, 145),
+         backgroundColor: const Color.fromARGB(255, 104, 125, 145),
        ),
       body: Container(
               height: double.infinity,

@@ -139,7 +139,7 @@ class _SearchPageState extends State<SearchPage> {
             minWidth: screenWidth * 0.1,
 
             // color for button
-            color: Color(0xFFB4d3b2),
+            color: const Color(0xFFB4d3b2),
             child: const Padding(
               padding: EdgeInsets.all(10.0),
               child: Text("Detect",

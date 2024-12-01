@@ -6,7 +6,7 @@ class Help extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height ;
-    double screenWidth = MediaQuery.of(context).size.width ;
+    //double screenWidth = MediaQuery.of(context).size.width ;
 
     // returns the name of class along with some padding
     Widget returnClass (String name) {

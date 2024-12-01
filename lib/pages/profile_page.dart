@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart' ;
+import 'package:my_flutter_app/pages/edit.dart';
 import 'package:my_flutter_app/pages/help.dart';
+import 'package:my_flutter_app/pages/history.dart';
+import 'package:my_flutter_app/pages/settings.dart';
+import 'package:my_flutter_app/pages/contact_us.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -16,7 +20,14 @@ class _ProfilePageState extends State<ProfilePage> {
     return Padding(
       padding:  EdgeInsets.only(bottom:screenHeight * 0.02),
       child: GestureDetector(
-        onTap: () => {Navigator.push(context, MaterialPageRoute(builder: (context) => const Help()))},
+        // according to button pressed
+        onTap: () => {
+          if (name == 'Edit') {Navigator.push(context, MaterialPageRoute(builder: (context) => const Edit()))},
+          if (name == 'Help') {Navigator.push(context, MaterialPageRoute(builder: (context) => const Help()))},
+          if (name == 'History') {Navigator.push(context, MaterialPageRoute(builder: (context) => const History()))},
+          if (name == 'Contact Us') {Navigator.push(context, MaterialPageRoute(builder: (context) => const ContactUs()))},
+          if (name == 'Settings') {Navigator.push(context, MaterialPageRoute(builder: (context) => const Settings()))},
+        },
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
@@ -50,12 +61,12 @@ class _ProfilePageState extends State<ProfilePage> {
     double screenHeight = MediaQuery.of(context).size.height ;
     double screenWidth = MediaQuery.of(context).size.width ;
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 52, 66, 80),
+      backgroundColor: const Color.fromARGB(255, 52, 66, 80),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Container(
-              color: Color.fromARGB(255, 52, 66, 80),
+              color: const Color.fromARGB(255, 52, 66, 80),
               height: screenHeight * 0.25,
               width: double.infinity,
               child: Padding(
@@ -87,25 +98,14 @@ class _ProfilePageState extends State<ProfilePage> {
         
             Padding(
               padding: EdgeInsets.only(top:screenHeight * 0.025, left: 10, right:10),
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Color.fromARGB(255, 52, 66, 80),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  )
-                ),
-                height: 10,
-                width: double.infinity,
-                child: Column(
-                  children: [
-                    _profileOptions("Edit", Icons.edit,context),
-                    _profileOptions("Help", Icons.help,context),
-                    _profileOptions("History", Icons.history,context),
-                    _profileOptions("Contact Us", Icons.contact_mail,context),
-                    _profileOptions("Settings", Icons.settings,context),
-                  ]
-                ),
+              child: Column(
+                children: [
+                  _profileOptions("Edit", Icons.edit,context),
+                  _profileOptions("Help", Icons.help,context),
+                  _profileOptions("History", Icons.history,context),
+                  _profileOptions("Contact Us", Icons.contact_mail,context),
+                  _profileOptions("Settings", Icons.settings,context),
+                ]
               ),
             ),
           ],

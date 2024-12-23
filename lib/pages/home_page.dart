@@ -411,13 +411,18 @@ class _HomePageState extends State<HomePage> {
                           ),
                           height: 45,
                           width: 280,
-                          child: const Padding(
-                            padding: EdgeInsets.only(top:8.0, left: 25),
-                            child: Text('Post your query ?',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w300,
-                              )
+                          child: Padding(
+                            padding: const EdgeInsets.only(top:8.0, left: 25),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const PostPage())) ;
+                              },
+                              child: const Text('Post your query ?',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w300,
+                                )
+                              ),
                             ),
                           ),
                         ),
@@ -425,9 +430,14 @@ class _HomePageState extends State<HomePage> {
                         const SizedBox(width: 20),
 
                         // gallery icon
-                        const Icon(Icons.photo_album,
-                          size: 35,
-                          color: Color.fromARGB(255, 207, 216, 200),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const PostPage())) ;
+                          },
+                          child: const Icon(Icons.photo_album,
+                            size: 35,
+                            color: Color.fromARGB(255, 207, 216, 200),
+                          ),
                         )
                       ],
                     ),

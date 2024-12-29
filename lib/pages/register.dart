@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' ;
+import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';
 import 'package:my_flutter_app/pages/main_page.dart';
 import 'package:my_flutter_app/pages/util/my_button.dart';
 // import 'package:plant_disease/pages/util/my_button.dart';
@@ -12,9 +13,6 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-
-  String? _selectedGender; // Variable to store selected gender
-
   
   int sum = 0 ;
   final RegExp _nameRegExp = RegExp(r'^[A-Za-z]+$');
@@ -163,48 +161,7 @@ class _RegisterState extends State<Register> {
                     
                         customInputField(label: "Last Name", hintText: "Oli", controller: lastNameController), 
                     
-                        const SizedBox(height: 10),
-                    
-                        Column(
-                          children: [
-                            // const Text("Gender: ",
-                            //   style: TextStyle(
-                            //     fontSize: 20,
-                            //     fontWeight: FontWeight.bold,
-                            //   )
-                            // ),
-          
-                            DropdownButtonFormField(
-                              dropdownColor: const Color.fromARGB(255, 173, 204, 217),
-                              value: _selectedGender,
-                              hint: const Text('Choose your gender', 
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 173, 204, 217),
-                                  fontWeight: FontWeight.bold,
-                                )
-                              ),
-                              items: ['Male', 'Female', 'Others']
-                                  .map((String gender) {
-                                    return DropdownMenuItem(
-                                      value: gender,
-                                      child: Text(gender, style: const TextStyle(color: Color.fromARGB(255, 173, 204, 217))),
-                                    );
-                                  })
-                                  .toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedGender = newValue;
-                                });
-                              },
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                              ),
-                            ),
-                          ]
-                        ),
+                        const SizedBox(height: 10),                    
           
                         const SizedBox(height: 10),
                     
@@ -224,6 +181,7 @@ class _RegisterState extends State<Register> {
                     int sum = _checkValidity() ;
                     switch (sum) {
                       case 0:
+                        Account.insertAcconut(firstNameController.text, middleNameController.text, lastNameController.text, emailController.text, passwordController.text,null, null);
                         Navigator.push(context, MaterialPageRoute(builder: (context) => const MainPage())) ;
                         break ;
                       
@@ -251,6 +209,7 @@ class _RegisterState extends State<Register> {
                           },
                         );
                     }
+
                   }
                 ),
               ],

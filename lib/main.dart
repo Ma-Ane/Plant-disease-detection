@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';
+import 'package:my_flutter_app/MongoManagement/mongomgmt.dart';
 import 'package:my_flutter_app/pages/front_page.dart';
-//import 'package:plant_disease/pages/front_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await MongoDatabase.connect();
+
   runApp(const MyApp());
 }
 

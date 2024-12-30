@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart' ;
+import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';
 import 'package:my_flutter_app/pages/main_page.dart';
 import 'package:my_flutter_app/pages/register.dart';
 import 'package:my_flutter_app/pages/util/my_button.dart';
-// import 'package:plant_disease/pages/main_page.dart';
-// import 'package:plant_disease/pages/register.dart';
-// import 'package:plant_disease/pages/util/my_button.dart';
 
 class SignIn extends StatelessWidget {
   SignIn({super.key});
@@ -91,7 +89,7 @@ class SignIn extends StatelessWidget {
                     context: context, 
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: const Text("Forgot ?"),
+                        title: const Text("Forgot?"),
                         content: const Text("Please contact the administrator."),
                         actions: [
                           TextButton(
@@ -119,8 +117,34 @@ class SignIn extends StatelessWidget {
             Center(
               child: MyButton(
                 text: "Sign In", 
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const MainPage())) ;
+                onPressed: () async{
+                  Account.userAcc = await Account.retreiveAcconutep(gmailControllerSignIn.text,passwordControllerSignIn.text);
+                  if((Account.userAcc != null)){
+                    if(context.mounted){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const MainPage())) ;
+                    }
+                  }
+                  else{
+                    if(context.mounted){
+                    showDialog(
+                      
+                    context: context, 
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("Account error!"),
+                        content: const Text("Account doesn't exist or email doesn't match password."),
+                        actions: [
+                          TextButton(
+                            onPressed: () {Navigator.of(context).pop();}, 
+                            child: const Text("Ok"),
+                          )
+                        ]
+                      ) ;
+                    }
+                  
+                    );
+                  }
+                  }
                 }
               ),
             ),

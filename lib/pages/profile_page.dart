@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart' ;
+import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';
 import 'package:my_flutter_app/pages/edit.dart';
 import 'package:my_flutter_app/pages/help.dart';
 import 'package:my_flutter_app/pages/history.dart';
 import 'package:my_flutter_app/pages/settings.dart';
 import 'package:my_flutter_app/pages/contact_us.dart';
+import 'package:my_flutter_app/pages/sign_in.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -57,6 +61,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    if(Account.userAcc == null){
+      Navigator.push(context,MaterialPageRoute(builder: (context) => SignIn()),
+     );
+    }
+    
+    File userPic = strtoimg(Account.userAcc?.pfp, Account.userAcc?.pfptype);
+    String userName = "${Account.userAcc?.firstname} ${Account.userAcc?.middlename} ${Account.userAcc?.lastname}";
+
         // determine the screen height and width
     double screenHeight = MediaQuery.of(context).size.height ;
     double screenWidth = MediaQuery.of(context).size.width ;
@@ -76,17 +88,18 @@ class _ProfilePageState extends State<ProfilePage> {
                     SizedBox(height: screenHeight * 0.03),
         
                     ClipOval(
-                      child: Image.asset('images/profile_pic.jpg', 
+                      child: Image.file(userPic,
                                 fit: BoxFit.cover,
                                 height: screenWidth * 0.25,
                                 width: screenWidth * 0.25,
                       ), 
+                      
                     ),
                 
                     SizedBox(height: screenHeight * 0.02),
         
-                    const Text("Manjit Maharjan",
-                      style: TextStyle(
+                    Text(userName,
+                        style: const TextStyle(
                         color: Colors.white,
                         fontSize: 28,
                         fontWeight: FontWeight.bold,

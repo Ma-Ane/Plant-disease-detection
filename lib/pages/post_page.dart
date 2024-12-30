@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart' ;
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';   // for File datatype
+import 'dart:io';
+
+import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';
+import 'package:my_flutter_app/pages/sign_in.dart';   // for File datatype
 
 class PostPage extends StatefulWidget {
   const PostPage({super.key});
@@ -13,11 +16,11 @@ class _PostPageState extends State<PostPage> {
     final ImagePicker _picker = ImagePicker();
     File? image ;
 
-  Widget returnUserData(String userName, String userPic) {
+  Widget returnUserData(String userName, File userPic) {
     return Row(
       children: [
         ClipOval(
-          child: Image.asset(userPic, 
+          child: Image.file(userPic, 
                   fit: BoxFit.cover,
                   height: 50,
                   width: 50,
@@ -51,6 +54,14 @@ class _PostPageState extends State<PostPage> {
     double screenHeight = MediaQuery.of(context).size.height ;
     double screenWidth = MediaQuery.of(context).size.width ;
 
+    if(Account.userAcc == null){
+      Navigator.push(context,MaterialPageRoute(builder: (context) => SignIn()),
+     );
+    }
+    
+    File userPic = strtoimg(Account.userAcc?.pfp, Account.userAcc?.pfptype);
+    String userName = "${Account.userAcc?.firstname} ${Account.userAcc?.middlename} ${Account.userAcc?.lastname}";
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Post"),
@@ -66,7 +77,7 @@ class _PostPageState extends State<PostPage> {
                   children: [
                     Padding(
                       padding: EdgeInsets.only(left:screenWidth * 0.03, top: screenHeight * 0.02),
-                      child: returnUserData("Manjit Maharjan", "images/profile_pic.jpg"),
+                      child: returnUserData(userName, userPic),
                     ),
         
                     Padding(
@@ -75,7 +86,7 @@ class _PostPageState extends State<PostPage> {
                         maxLines: null,         // infinite number of lines
                         minLines: 1,
                         decoration: InputDecoration(
-                          hintText: "Caption the Photo", 
+                          hintText: "Caption the Photo:", 
                           hintStyle: TextStyle(color: Color(0xffcfcfcf))
                         ),
                       ),

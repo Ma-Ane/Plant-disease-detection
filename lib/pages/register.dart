@@ -165,7 +165,7 @@ class _RegisterState extends State<Register> {
           
                         const SizedBox(height: 10),
                     
-                        customInputField(label: "Email", hintText: "k.p.oli@gmail.com", controller: emailController),
+                        customInputField(label: "Email", hintText: "kpoli@gmail.com", controller: emailController),
                   
                         const SizedBox(height: 10),
                     

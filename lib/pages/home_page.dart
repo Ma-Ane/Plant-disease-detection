@@ -3,7 +3,39 @@
 import 'package:flutter/material.dart' ;
 import "dart:io" ;
 import 'package:image_picker/image_picker.dart';
+import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';
 import 'package:my_flutter_app/pages/post_page.dart';
+import 'package:my_flutter_app/pages/sign_in.dart';
+
+class Postinfo{
+  late String username;
+  late File userImg;
+  late File postImg;
+  late String postdescription;
+  bool isliked = false;
+  List<Widget> commentlist = []; 
+
+  Postinfo(this.username, this.userImg, this.postImg, this.postdescription, this.isliked);
+
+  Postinfo.getPostInfo(Account A, Post P, Map<Comment,Account> C, BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height ;
+    double screenWidth = MediaQuery.of(context).size.width ;
+    username = "${A.firstname} ${A.middlename} ${A.lastname}";
+    userImg = strtoimg(A.pfp, A.pfptype);
+    postImg = strtoimg(P.pimg, P.pimgtype);
+    postdescription = P.pdescription;
+    for(var x in P.plikes){
+      if(x==A.aid){
+        isliked = true;
+        break;
+      }
+    }
+    for(var x in C.entries){
+      _HomePageState.returnComment(screenHeight * 0.4, screenWidth * 0.9, x.value,x.key);
+    }
+  }
+  
+}
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,20 +52,15 @@ class _HomePageState extends State<HomePage> {
   final ImagePicker _picker = ImagePicker();
   File? image ;
 
-  // paxi chaina sakxqa
-  // like button
-  bool isliked = false ;
-
   void name() {}
-
   // user ko naam ra profile pic
-  Widget _returnUserData(String userName, String userPic) {
+  Widget _returnUserData(String userName, File userPic) {
     return Row(
       children: [
         
         // clivoval le photo lai round banauxa
         ClipOval(
-          child: Image.asset(userPic, 
+          child: Image.file(userPic, 
                   fit: BoxFit.cover,
                   height: 50,
                   width: 50,
@@ -53,12 +80,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   // esle query ko photo return garxa.. bhaneko leaf ko photo
-  Widget _queryPhoto(String leaf, BuildContext context) {
+  Widget _queryPhoto(File ppic, BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height ;
     // clipreact user gareraa border radius rakheko
     return ClipRRect(
         borderRadius: BorderRadius.circular(20),
-        child: Image.asset(leaf,
+        child: Image.file(ppic,
           fit: BoxFit.fill,
           height: screenHeight *0.12,
           width: screenHeight * 0.12,  
@@ -67,10 +94,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   // sabai post ko lagi chuttai chuttai garna baki xa like button
-  void toggleLike() {
-    setState(() {
-      isliked = !isliked ;
-    });
+  Future toggleLike()async {
   }
 
   // gallery kholne aafno mob ko
@@ -86,14 +110,15 @@ class _HomePageState extends State<HomePage> {
 
 
   // each comment lai dekhauxaa
-  Widget returnComment (double height, double width) {
+  static Widget returnComment (double height, double width, Account A, Comment c) {
+    File userpfp = strtoimg(A.pfp, A.pfptype);
     return Padding(
       padding: const EdgeInsets.all(10.0),
       // row for pic and comment
       child: Row (
         children: [
           ClipOval(
-            child: Image.asset('images/profile2.jpg', height: height * 0.1,),
+            child: Image.file(userpfp, height: height * 0.1,),
           ),
     
           SizedBox(width: width * 0.02,),
@@ -106,9 +131,9 @@ class _HomePageState extends State<HomePage> {
             ),
             height: height * 0.1,
             width: width * 0.5,
-            child: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text("Very Nice Photo"),
+            child: Padding (
+              padding: const EdgeInsets.all(8.0),
+              child: Text(c.cdescription),
             ),
           ),
         ],
@@ -116,8 +141,49 @@ class _HomePageState extends State<HomePage> {
     ) ;
   }
 
+  
+  Future<List<Widget>> getposts(BuildContext context) async{
+    List<Post> p = await Post.retreivePostList();
+    List<Account> a =[];    
+    List<Comment> temp;
+    Account? atemp;
+    Map<Comment,Account> mtemp ={};
+    List<Map<Comment,Account>> m = [];
+    List<Widget> rq = [];
+
+    for(Post x in p){
+      var temp = await Account.retreiveAcconutoi(x.aid);
+      if(temp == null){
+       // a.add(Account.userAcc);
+      }
+      else{
+        a.add(temp);
+      }
+    }
+
+    for (var i = 0; i < p.length; i++) {
+      temp = await Comment.retreiveCommentap(a[i].aid, p[i].pid);
+      for(var j = 0; j < temp.length; j++){
+          atemp = await Account.retreiveAcconutoi(temp[i].aid);
+          if(atemp != null){
+            mtemp[temp[i]] = atemp;
+          }
+      }
+    m.add(mtemp);
+    }
+
+    for(var i = 0; i<p.length; i++){
+        if (context.mounted) {
+          rq.add(_returnQuery(context,Postinfo.getPostInfo(a[i], p[i], m[i], context)));
+        }
+    }
+
+    return rq;
+  }
+  
+
   // esle euta query return garxa pura box
-  Widget _returnQuery(BuildContext context, name, String photo, String leaf, String description, bool isliked) {
+  Widget _returnQuery(BuildContext context, Postinfo pi){
     double screenHeight = MediaQuery.of(context).size.height ;
     double screenWidth = MediaQuery.of(context).size.width ;
     return Padding(
@@ -163,7 +229,7 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.only(bottom: 5, top:15, left: 10, right: 10),
 
                     // esle chai db bata naam ra photo linxa
-                    child: _returnUserData(name, photo),
+                    child: _returnUserData(pi.username, pi.userImg),
                   ),
                 ],
               ),
@@ -190,7 +256,7 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.all(8.0),
 
                         // db bata linee
-                        child: Text(description
+                        child: Text(pi.postdescription
                         , style: const TextStyle(
                           color: Colors.white
                         )),
@@ -202,7 +268,7 @@ class _HomePageState extends State<HomePage> {
                   // eslai responsibe banuanee
                   Padding(
                     padding: const EdgeInsets.only(left:20.0),
-                    child: _queryPhoto(leaf,context),
+                    child: _queryPhoto(pi.postImg,context),
                   ),
                 ],
               ),
@@ -218,7 +284,7 @@ class _HomePageState extends State<HomePage> {
                     onTap: toggleLike,
 
                     // like ko button change garna ko lagi
-                    child: Icon(isliked ? Icons.favorite : Icons.favorite_border, 
+                    child: Icon(pi.isliked ? Icons.favorite : Icons.favorite_border, 
                         size: 28, color: const Color.fromARGB(255, 212, 113, 104),
                       ),
                   ),
@@ -268,15 +334,7 @@ class _HomePageState extends State<HomePage> {
                                   
                                     // harek comment 
                                     child: Column(
-                                      children: [
-                                        returnComment(screenHeight * 0.4, screenWidth * 0.9),
-                                  
-                                        returnComment(screenHeight * 0.4, screenWidth * 0.9),
-                                  
-                                        returnComment(screenHeight * 0.4, screenWidth * 0.9),
-                                        
-                                        returnComment(screenHeight * 0.4, screenWidth * 0.9),
-                                      ],
+                                      children: [...pi.commentlist],
                                     ),
                                   ),
                                 ),
@@ -350,6 +408,22 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     // yo chai ali milaunu parxa hola haii query haru lai ramrarii dekhaunaa
+    
+    if(Account.userAcc == null){
+      Navigator.push(context,MaterialPageRoute(builder: (context) => SignIn()),
+     );
+    }
+    
+    File userPic = strtoimg(Account.userAcc?.pfp, Account.userAcc?.pfptype);
+    String userName = "${Account.userAcc?.firstname} ${Account.userAcc?.middlename} ${Account.userAcc?.lastname}";
+
+     Future<List<Widget>> futureList =  getposts(context);
+     List<Widget> posts =[];
+     futureList.then((list){
+      posts.insertAll(0, list);
+     });
+  // Use .then() to handle the resolved list
+
     return ListView.builder(
       itemCount: 1,       // esle tala bhako sabai content ek choti matrai dekhauxaa
       itemBuilder: (context, index){ 
@@ -375,7 +449,7 @@ class _HomePageState extends State<HomePage> {
                     child: Row(
                       // yo naam ra pic ko lagi
                       children: [
-                        _returnUserData("Manjit Maharjan", "images/profile_pic.jpg"),
+                        _returnUserData(userName, userPic),
       
                         const SizedBox(width: 50),
 
@@ -417,7 +491,7 @@ class _HomePageState extends State<HomePage> {
                               onTap: () {
                                 Navigator.push(context, MaterialPageRoute(builder: (context) => const PostPage())) ;
                               },
-                              child: const Text('Post your query ?',
+                              child: const Text('Post your query?',
                                 style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.w300,
@@ -448,9 +522,8 @@ class _HomePageState extends State<HomePage> {
           ),
 
         // eslee harek user ko query return garxxa
-        _returnQuery(context, "Ishan Ghimire", 'images/profile2.jpg', 'images/leaf1.jpg', "Hello, I have been using this app for quite a long time and think that this app is great and can help other users in identifying the disease and also provide some recommendations based on the result.", isliked),
-        _returnQuery(context, "Mandip Shrestha", 'images/profile3.jpg', 'images/leaf2.jpg', "Hello, I have been using this app for quite a long time and think that this app is great and can help other users in identifying the disease and also provide some recommendations based on the result.", isliked),
-        _returnQuery(context, "Jyoti Kumari Gupta", 'images/profile4.jpg', 'images/leaf3.jpg', "Hello, I have been using this app for quite a long time and think that this app is great and can help other users in identifying the disease and also provide some recommendations based on the result.", isliked),
+        ...posts
+
         ],
       ) ;
       }

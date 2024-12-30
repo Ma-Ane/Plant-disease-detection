@@ -12,9 +12,9 @@ String? imgtostr(File? ima){
   return imagestr;
 }
   
-File? strtoimg(String? str, String? imgtype){
+File strtoimg(String? str, String? imgtype){
   if(str == null || imgtype == null){
-    return null;
+    return File('images/profile_pic.jpg');
   }
   var bytes = base64.decode(str);
   File file =File(DateTime.now().millisecondsSinceEpoch.toString() + "." + imgtype);
@@ -30,6 +30,9 @@ Account accountFromJson(String str) => Account.fromJson((json.decode(str)));
 String accountToJson(Account data) => json.encode(data.toJson());
 
 class Account extends DbObject{
+   static Account? userAcc;
+   //static Account notfound;
+
     ObjectId aid;
     String firstname;
     String middlename;
@@ -74,9 +77,13 @@ class Account extends DbObject{
     };
 
   static Future<String> insertAcconut(String fname, String mname, String lname, String emaddr, String pw, File? img, String? impty) async{
+  final check = await retreiveAcconutep(emaddr, pw);
+  if(check != null){
+
   var id_ = ObjectId();
   var imgstr = imgtostr(img);
   final data = Account(aid: id_, firstname: fname,middlename: mname, lastname: lname, email: emaddr,password: pw, pfp: imgstr, pfptype: impty);
+
   try{
   String result = await MongoDatabase.insertToDb(data);
   
@@ -85,12 +92,19 @@ class Account extends DbObject{
       return e.toString();
   }
   }
-
-  static Future<Account?> retreiveAcconut(String emaddr, String pw) async{
-  var val = await MongoDatabase.findUser(emaddr,pw);
-  return val;
+  else{
+    return "This email is already used by an account!";
+  }
   }
 
+  static Future<Account?> retreiveAcconutep(String emaddr, String pw) async{
+  var val = await MongoDatabase.findAccountep(emaddr,pw);
+  return val;
+  }
+  static Future<Account?> retreiveAcconutoi(ObjectId a) async{
+  var val = await MongoDatabase.findAccountoi(a);
+  return val;
+  }
 }
 
 
@@ -99,7 +113,7 @@ String postToJson(Post data) => json.encode(data.toJson());
 class Post extends DbObject{
     ObjectId pid;
     ObjectId aid;
-    String plikes;
+    List<ObjectId> plikes;
     String pdescription;
     String ptitle;
     String? pimg;
@@ -111,14 +125,14 @@ class Post extends DbObject{
         required this.plikes,
         required this.pdescription,
         required this.ptitle,
-        required this.pimg,
-        required this.pimgtype,
+        this.pimg,
+        this.pimgtype,
     });
 
     factory Post.fromJson(Map<String, dynamic> json) => Post(
         pid: json["pid"],
         aid: json["aid"],
-        plikes: json["plikes"],
+        plikes: List<ObjectId>.from(json["plikes"].map((x) => x)),
         pdescription: json["description"],
         ptitle: json["title"],
         pimg: json["pimage"],
@@ -129,17 +143,17 @@ class Post extends DbObject{
     Map<String, dynamic> toJson() => {
         "pid": pid,
         "aid": aid,
-        "plikes": plikes,
+        "plikes": List<ObjectId>.from(plikes.map((x) => x)),
         "pdescription": pdescription,
         "ptitle": ptitle,
         "pimage": pimg,
         "pimgtype": pimgtype,
     };
 
-  static Future<String> insertPost(ObjectId id_, int pl,  String desc, String tit, File? ima, String? type) async{
+  static Future<String> insertPost(ObjectId id_, String desc, String tit, File? ima, String? type) async{
   var piid = ObjectId();
   var imagestr = imgtostr(ima);
-  final data = Post(pid: piid, aid: id_, plikes: pl.toString() ,pdescription: desc, ptitle: tit, pimg: imagestr, pimgtype:type);
+  final data = Post(pid: piid, aid: id_,plikes: [] ,pdescription: desc, ptitle: tit, pimg: imagestr, pimgtype:type);
   try{
   String result = await MongoDatabase.insertToDb(data);
   return result;
@@ -148,7 +162,7 @@ class Post extends DbObject{
   }
   }
 
-  static Future<Post?> retreivePost() async{
+  static Future<List<Post>> retreivePostList() async{
   var val = await MongoDatabase.findPost();
   return val;
   }
@@ -161,7 +175,7 @@ class Comment extends DbObject{
     ObjectId cid;
     ObjectId pid;
     ObjectId aid;
-    String clikes;
+    List<ObjectId> clikes;
     String cdescription;
     ObjectId? posid;
 
@@ -178,7 +192,7 @@ class Comment extends DbObject{
         cid: json["cid"],
         pid: json["pid"],
         aid: json["aid"],
-        clikes: json["clikes"],
+        clikes: List<ObjectId>.from(json["clikes"].map((x) => x)),
         cdescription: json["cdescription"],
         posid: json["posid"],
     );
@@ -188,14 +202,14 @@ class Comment extends DbObject{
         "cid": cid,
         "pid": pid,
         "aid": aid,
-        "clikes": clikes,
+        "clikes": List<ObjectId>.from(clikes.map((x) => x)),
         "cdescription": cdescription,
         "posid": posid,
     };
 
-    static Future<String> insertComment( ObjectId id_, ObjectId piid, int cl, String desc, ObjectId positionid) async{
+    static Future<String> insertComment( ObjectId id_, ObjectId piid, String desc, ObjectId positionid) async{
   var ciid = ObjectId();
-  final data = Comment(cid: ciid, aid: id_, pid: piid, clikes: cl.toString() ,cdescription: desc, posid: positionid);
+  final data = Comment(cid: ciid, aid: id_, pid: piid, clikes: [] ,cdescription: desc, posid: positionid);
   try{
   String result = await MongoDatabase.insertToDb(data);
   return result;
@@ -204,8 +218,13 @@ class Comment extends DbObject{
   }
   }
 
-  static Future<Comment?> retreiveComment(ObjectId? id_, ObjectId? piid, ObjectId? ciid) async{
-  var val = await MongoDatabase.findComment(id_, piid, ciid);
+  static Future<Comment?> retreiveCommentapc(ObjectId? id_, ObjectId? piid, ObjectId? ciid) async{
+  var val = await MongoDatabase.findCommentapc(id_, piid, ciid);
+  return val;
+  }
+
+  static Future<List<Comment>> retreiveCommentap(ObjectId id_, ObjectId piid) async{
+  var val = await MongoDatabase.findCommentap(id_, piid);
   return val;
   }
 }

@@ -42,7 +42,7 @@ class _SearchPageState extends State<SearchPage> {
           padding: EdgeInsets.only(top:screenHeight * 0.1, left: screenWidth * 0.05, right: screenWidth * 0.05),
 
           // heading text
-          child: const Text("Upload Picture for Disease Detection.",
+          child: const Text("Upload Picture for Disease Detection",
             style: TextStyle(
               color: Colors.white,
               fontSize: 27,
@@ -114,7 +114,7 @@ class _SearchPageState extends State<SearchPage> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: const Text("Please choose a photo first.",
+                      title: const Text("Please choose a photo first",
                         style: TextStyle(
                           fontSize: 20,
                         )

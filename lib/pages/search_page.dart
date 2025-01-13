@@ -1,4 +1,4 @@
-import 'dart:io';   // for File datatype
+import 'dart:io';
 import 'package:flutter/material.dart' ;
 import 'package:image_picker/image_picker.dart';
 import 'package:my_flutter_app/pages/after_detection.dart';

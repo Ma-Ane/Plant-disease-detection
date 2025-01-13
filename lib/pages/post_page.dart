@@ -3,7 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';
-import 'package:my_flutter_app/pages/sign_in.dart';   // for File datatype
+import 'package:my_flutter_app/pages/front_page.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({super.key});
@@ -16,16 +16,19 @@ class _PostPageState extends State<PostPage> {
     final ImagePicker _picker = ImagePicker();
     File? image ;
 
-  Widget returnUserData(String userName, File userPic) {
+  Widget returnUserData(String userName, Image userPic) {
     return Row(
       children: [
         ClipOval(
-          child: Image.file(userPic, 
-                  fit: BoxFit.cover,
-                  height: 50,
-                  width: 50,
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: SizedBox(                    
+              height: 50,
+              width: 50,
+              child: userPic, 
+            ),
           ), 
-        ),
+        ),  
 
         const SizedBox(width: 30),
 
@@ -54,70 +57,73 @@ class _PostPageState extends State<PostPage> {
     double screenHeight = MediaQuery.of(context).size.height ;
     double screenWidth = MediaQuery.of(context).size.width ;
 
-    if(Account.userAcc == null){
-      Navigator.push(context,MaterialPageRoute(builder: (context) => SignIn()),
-     );
+    if(Account.userAcc.isnull == true){
+      showDialog(
+        context: context, 
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Account error!"),
+            content: const Text("Error in getting account info."),
+            actions: [
+              TextButton(
+                onPressed: () =>Navigator.of(context).push(MaterialPageRoute(builder: (context) => const FrontPage())),
+                child: const Text("Ok"),
+              )
+            ]
+          );
+        }   
+      );
     }
     
-    File userPic = strtoimg(Account.userAcc?.pfp, Account.userAcc?.pfptype);
-    String userName = "${Account.userAcc?.firstname} ${Account.userAcc?.middlename} ${Account.userAcc?.lastname}";
+    Image userPic = Account.userAcc.pfp??const Image(image: AssetImage('images/blankPfp.jpg'));
+    String userName = "${Account.userAcc.firstname} ${Account.userAcc.middlename} ${Account.userAcc.lastname}";
 
     return Scaffold(
       appBar: AppBar(
         title: const Text("Post"),
         backgroundColor: const Color(0xff687d91),
-      ),
-      body: Stack(
+        ),
+        body: Stack(
         children: [
-              Container(
-                height: double.infinity,
-                width: double.infinity,
-                color: const Color(0xFF344250),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(left:screenWidth * 0.03, top: screenHeight * 0.02),
-                      child: returnUserData(userName, userPic),
-                    ),
+          Container(
+            height: double.infinity,
+            width: double.infinity,
+            color: const Color(0xFF344250),
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left:screenWidth * 0.03, top: screenHeight * 0.02),
+                  child: returnUserData(userName, userPic),
+                ),
         
-                    Padding(
-                      padding: EdgeInsets.all(screenWidth * 0.04),
-                      child: const TextField(
-                        maxLines: null,         // infinite number of lines
-                        minLines: 1,
-                        decoration: InputDecoration(
-                          hintText: "Caption the Photo:", 
-                          hintStyle: TextStyle(color: Color(0xffcfcfcf))
-                        ),
+                Padding(
+                  padding: EdgeInsets.all(screenWidth * 0.04),
+                  child: const TextField(
+                    maxLines: null,         // infinite number of lines
+                    minLines: 1,
+                    decoration: InputDecoration(
+                      hintText: "Caption the Photo:", 
+                      hintStyle: TextStyle(color: Color(0xffcfcfcf))
                       ),
                     ),
+                  ),
                             
-                    Padding(
-                      padding: EdgeInsets.all(screenHeight * 0.05),
-                      child:               Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  //color: Colors.white,
-                ),
-                height: 240,
-                width: 240,
+                Padding(
+                  padding: EdgeInsets.all(screenHeight * 0.05),
+                  child:               Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  height: 240,
+                  width: 240,
 
                 // yo chai yedi image xa bhaye image rakhne.. na bhaye ma camera icon
-                child: image != null ? 
-
-                        // image ko property
-                        Image.file(image!,
-                          height: 240, 
-                          width: 240, 
-                          fit: BoxFit.cover) : 
-
-                        // camera button lai milako
-                        Align(
-                          alignment: Alignment.center,
-                            child: MaterialButton(
-                              onPressed: _addPhoto,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                  child: image != null ? Image.file(image!,height: 240,width: 240,fit: BoxFit.cover) : Align(
+                    alignment: Alignment.center,
+                    child: MaterialButton(
+                      onPressed: _addPhoto,
+                      shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                               ),
                             
                               height: 300,
@@ -156,6 +162,7 @@ class _PostPageState extends State<PostPage> {
                       //         ),
                       // ),
                     ),
+
                   ],
                 ),
               ),

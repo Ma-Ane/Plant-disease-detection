@@ -16,9 +16,12 @@ class SignIn extends StatelessWidget {
       backgroundColor: const Color.fromARGB(255, 52, 66, 80),
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text("Sign In", style: TextStyle(color: Colors.white),),
+        title: const Text("Sign In",
+         style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color.fromARGB(255, 52, 66, 80),
       ),
+
       body: Padding(
         padding: const EdgeInsets.only(top: 150),
         child: Container(
@@ -50,11 +53,6 @@ class SignIn extends StatelessWidget {
                   decoration: const InputDecoration(
                     hintText: "abcde@gmail.com",
                     hintStyle: TextStyle(color: Colors.black26)
-                      // label: Text('Email',
-                      //   style: TextStyle(
-                      //     fontWeight: FontWeight.bold,
-                      //   ),
-                      // ),
                   ),
                 ),
 
@@ -73,116 +71,109 @@ class SignIn extends StatelessWidget {
                     suffixIcon: Icon(Icons.visibility_off),
                     hintText: "123abcD@",
                     hintStyle: TextStyle(color: Colors.black26)
-                    // label: Text("Password",
-                    //   style: TextStyle(
-                    //     fontWeight: FontWeight.bold,
-                    //   ),
-                    // )
                   )
                 ),
 
-              const SizedBox(height: 40),
+                const SizedBox(height: 40),
 
-              GestureDetector(
-                onTap: () {
-                  showDialog(
-                    context: context, 
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text("Forgot?"),
-                        content: const Text("Please contact the administrator."),
-                        actions: [
-                          TextButton(
-                            onPressed: () {Navigator.of(context).pop();}, 
-                            child: const Text("Ok"),
-                          )
-                        ]
-                      ) ;
-                    }
-                  );
-                },
-                child: const Align(
+                GestureDetector(
+                  onTap: () {
+                   showDialog(
+                     context: context, 
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text("Forgot?"),
+                         content: const Text("Please contact the administrator."),
+                          actions: [
+                            TextButton(
+                              onPressed: () {Navigator.of(context).pop();}, 
+                              child: const Text("Ok"),
+                            )
+                          ]
+                        ) ;
+                      }
+                   );
+                 },
+                 child: const Align(
                   alignment: Alignment.centerRight,
                   child: Text("Forgot Password?",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16
-                              ),
-                  ),
-                ),
-              ),
-
-            const SizedBox(height: 50),
-
-            Center(
-              child: MyButton(
-                text: "Sign In", 
-                onPressed: () async{
-                  Account.userAcc = await Account.retreiveAcconutep(gmailControllerSignIn.text,passwordControllerSignIn.text);
-                  if((Account.userAcc != null)){
-                    if(context.mounted){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const MainPage())) ;
-                    }
-                  }
-                  else{
-                    if(context.mounted){
-                    showDialog(
-                      
-                    context: context, 
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text("Account error!"),
-                        content: const Text("Account doesn't exist or email doesn't match password."),
-                        actions: [
-                          TextButton(
-                            onPressed: () {Navigator.of(context).pop();}, 
-                            child: const Text("Ok"),
-                          )
-                        ]
-                      ) ;
-                    }
-                  
-                    );
-                  }
-                  }
-                }
-              ),
-            ),
-
-            const SizedBox(height: 100),
-
-            Padding(
-              padding: const EdgeInsets.only(right:10.0),
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Text("Don't have an account?",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 17,
-                    )),
-                    
-                    const SizedBox(height: 20),
-
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const Register()));
-                      },
-                      child: const Text("Sign up",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 23,
-                      )),
+                      fontSize: 16
                     ),
-                  ],
+                   ),
                   ),
-              ),
-            )
+                ),
 
-              ],),
+                const SizedBox(height: 50),
+
+                Center(
+                  child: MyButton(
+                    text: "Sign In", 
+                    onPressed: () async{
+                      Account.userAcc = await Account.retreiveAcconutep(gmailControllerSignIn.text,passwordControllerSignIn.text);
+                      if(context.mounted){
+                        if((Account.userAcc.isnull==true)){
+                          showDialog(
+                            context: context, 
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text("Account error!"),
+                                content: const Text("Error in getting account info.\nAre you sure this account exists?"),
+                                actions: [
+                                  TextButton(
+                                  onPressed: () =>Navigator.of(context).pop(),
+                                  child: const Text("Ok"),
+                                  )
+                                ]
+                              );
+                            }   
+                          );
+                        }
+                        else{
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const MainPage()));
+                       }
+                      }
+                    }
+                  ),
+                ),
+
+                const SizedBox(height: 100),
+
+                Padding(
+                  padding: const EdgeInsets.only(right:10.0),
+                  child: Align(
+                    alignment: Alignment.bottomRight,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Text("Don't have an account?",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17,
+                          )
+                        ),
+                    
+                        const SizedBox(height: 20),
+
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const Register()));
+                          },
+                          child: const Text("Sign up",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 23,
+                            )
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
           )
         ),
       ) 

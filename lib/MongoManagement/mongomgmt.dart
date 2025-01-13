@@ -6,74 +6,90 @@ const usrColl="ProjectData";
 
 
 class MongoDatabase {
-    static var userCollection;
-    static connect() async{
-    Db db = await Db.create(mongoConnUrl);
-    await db.open();
-    userCollection = db.collection(usrColl);
-  }
+  static late DbCollection userCollection;
 
-  static Future<String> insertToDb(DbObject data) async{
-    try{ 
-     var result = await userCollection.insertOne(data.toJson()); 
-     if(result.isSuccess){
-      return "Data inserted Successfully.";
-     }
-     else{
-      throw "Data insertion error.";
-     }
+  static Future<bool> connect() async{
+    try{
+      Db db = await Db.create(mongoConnUrl);
+      await db.open();
+      userCollection = db.collection(usrColl);
+      return db.isConnected;
     }catch(e){
-      return e.toString();
+     rethrow;
+    }
+  }
+  
+
+  static Future<void> insertToDb(DbObject data) async{
+    try{ 
+      var result = await userCollection.insertOne(data.toJson()); 
+      if(!result.isSuccess){
+        throw "Data insertion error.";
+      }
+    }catch(e){
+      rethrow;
     }
   }
 
-  static Future<Account?> findAccountep(String emaddr, String pw) async{
+  static Future<Account> findAccountep(String emaddr, String pw) async{
     try{ 
-     var result = await userCollection.findOne({'email':emaddr, 'password': pw}).fromJson();
-     return result;     
+     Account result = Account.fromJson(await userCollection.findOne({'email':emaddr, 'password': pw}));
+     return result; 
     }catch(e){
-      return null;
+      rethrow;
     }
   }
 
-    static Future<Account?> findAccountoi(ObjectId A) async{
+    static Future<Account> findAccountoi(ObjectId A) async{
     try{ 
-     var result = await userCollection.findOne({'aid':A}).fromJson();
+     var result =  Account.fromJson(await userCollection.findOne({'aid':A}));
+     
      return result;     
     }catch(e){
-      return null;
+      return Account(isnull: true);
     }
   }
 
   static Future<List<Post>> findPost() async{
-     List<Map<String, dynamic>> result = await userCollection.aggregate([{'\$sample': {'size': 5}}]);
+     List<Map<String, dynamic>> result = await userCollection.find(where.exists('ptitle').limit(5)).toList();
      List<Post> x = [];
-     for(var y in result){
+     for(Map<String,dynamic> y in result){
       x.add(Post.fromJson(y));
      }
-
      return x;
+
   }
 
-  static Future<Comment?> findCommentapc(ObjectId? id_, ObjectId? piid, ObjectId? ciid) async{
+  static Future<Comment> findCommentapc(ObjectId? id_, ObjectId? piid, ObjectId? ciid) async{
     try{ 
-     var result = await userCollection.findOne({'id':id_, 'pid':piid, 'cid': ciid}).fromJson();
-     return result;     
+      Map<String,dynamic> x = {};
+      id_==null?():x.addAll({"aid":id_});
+      piid==null?():x.addAll({"pid":piid});
+      ciid==null?():x.addAll({"cid":ciid});
+      
+      var result =  Comment.fromJson(await userCollection.findOne());
+      return result;
+       
     }catch(e){
-      return null;
+      rethrow;
     }
   }
+
   static Future<List<Comment>> findCommentap(ObjectId id_, ObjectId piid) async{
-    var result = await userCollection.find({'id':id_, 'pid':piid}).toList();
-    return result;   
+    List<Map<String, dynamic>> result = await userCollection.find({'id':id_, 'pid':piid}).toList();
+    List<Comment> r =[];
+    for(Map<String, dynamic> x in result){
+      r.add(Comment.fromJson(x));
+    }
+    return r;   
   }
 
-  static Future<Disease?> findDisease(String jsonnum) async{
+  static Future<Disease> findDisease(String jsonnum) async{
     try{ 
-     var result = await userCollection.findOne({'jsonNo':jsonnum}).fromJson();
+     var result = Disease.fromJson(await userCollection.findOne({'jsonNo':jsonnum}));
      return result;     
     }catch(e){
-      return null;
+      return Disease(isnull: true);
     }
   }
 }

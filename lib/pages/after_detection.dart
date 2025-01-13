@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart' ;
-import 'dart:io';    // for File datatype
-
+import 'dart:io';   
 
 class AfterDetection extends StatelessWidget {
   final File? image ;

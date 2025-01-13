@@ -2,8 +2,6 @@ import 'package:flutter/material.dart' ;
 import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';
 import 'package:my_flutter_app/pages/main_page.dart';
 import 'package:my_flutter_app/pages/util/my_button.dart';
-// import 'package:plant_disease/pages/util/my_button.dart';
-// import 'package:plant_disease/pages/main_page.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -15,9 +13,9 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   
   int sum = 0 ;
-  final RegExp _nameRegExp = RegExp(r'^[A-Za-z]+$');
-  final RegExp _emailRegExp = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
-  final RegExp _passwordRegExp = RegExp(r'^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]+$');
+  //final RegExp _nameRegExp = RegExp(r'^[a-zA-Z]$');
+  //final RegExp _emailRegExp = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+  //final RegExp _passwordRegExp = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$');
 
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
@@ -27,13 +25,15 @@ class _RegisterState extends State<Register> {
 
 
   // custom function for each input field
-  Widget customInputField({
-    required String label,
-    required String hintText,
-    required TextEditingController controller,
-    IconData? icon,
-    bool isPassword = false,
-  }) {
+  Widget customInputField(
+    {
+      required String label,
+      required String hintText,
+      required TextEditingController controller,
+      IconData? icon,
+      bool isPassword = false,
+    }
+  )  {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -75,21 +75,21 @@ class _RegisterState extends State<Register> {
 
   int _checkValidity () {
     //int check = -1 ;    // each value for each input field
-    if (!_nameRegExp.hasMatch(firstNameController.text)) {      
-      return 1 ;
-    }
-    if (!_nameRegExp.hasMatch(middleNameController.text) &&  middleNameController.text != "" ) {      
-      return 2; 
-    }
-    if (!_nameRegExp.hasMatch(lastNameController.text)) {      
-      return 3; 
-    }
-    if (!_emailRegExp.hasMatch(emailController.text)) {
-      return 4 ;
-    }
-    if(!_passwordRegExp.hasMatch(passwordController.text)) {
-      return 5 ;
-    }
+    //if (!_nameRegExp.hasMatch(firstNameController.text)) {
+    //  return 1 ;
+   // }
+    //if (!_nameRegExp.hasMatch(middleNameController.text) &&  middleNameController.text != "" ) {
+      //return 2;
+    //}
+    //if (!_nameRegExp.hasMatch(lastNameController.text)) {
+    //  return 3;
+    //}
+   // if (!_emailRegExp.hasMatch(emailController.text)) {
+    //  return 4 ;
+    //}
+    //if(!_passwordRegExp.hasMatch(passwordController.text)) {
+     // return 5 ;
+    //}
     
     return 0 ;
     //sum = check.reduce((value, element) => value + element);
@@ -135,7 +135,7 @@ class _RegisterState extends State<Register> {
           
                 const SizedBox(height: 60),
           
-                Container(
+                SizedBox(
                   height: 550, 
                   width: double.infinity,
                   //color: Colors.yellow,
@@ -177,13 +177,55 @@ class _RegisterState extends State<Register> {
           
                 MyButton(
                   text: "Register", 
-                  onPressed: () {
+                  onPressed: () async{
                     int sum = _checkValidity() ;
                     switch (sum) {
                       case 0:
-                        Account.insertAcconut(firstNameController.text, middleNameController.text, lastNameController.text, emailController.text, passwordController.text,null, null);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const MainPage())) ;
-                        break ;
+                      try{
+                        await Account.insertAcconut(firstNameController.text, middleNameController.text, lastNameController.text, emailController.text, passwordController.text,null);
+                        Account.userAcc = await Account.retreiveAcconutep(emailController.text,passwordController.text);
+                      
+                        if(context.mounted&&Account.userAcc.isnull==false){
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const MainPage()));
+                        }
+                        else if(context.mounted){
+                          showDialog(
+                            context: context, 
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text("Account error!"),
+                                content: const Text("Error in getting account info."),
+                                actions: [
+                                  TextButton(
+                                  onPressed: () =>Navigator.of(context).pop(),
+                                  child: const Text("Ok"),
+                                  )
+                                ]
+                              );
+                            }   
+                          );
+                        }
+                      }catch(e){
+                        if(context.mounted){
+                          showDialog(
+                            context: context, 
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text("Connection error!"),
+                                content: Text(e.toString()),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {Navigator.of(context).pop();}, 
+                                    child: const Text("Ok"),
+                                  )
+                                ]
+                              );
+                            }   
+                          );
+                        }
+                      }
+                      
+                      break ;
                       
                       default:
                         String name = "Name" ;
@@ -200,7 +242,7 @@ class _RegisterState extends State<Register> {
                               actions: [
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.of(context).pop(); // Close the dialog
+                                    Navigator.of(context).pop(); 
                                   },
                                   child: const Text('OK'),
                                 ),

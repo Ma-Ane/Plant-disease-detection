@@ -1,16 +1,14 @@
-//import 'dart:ffi';
-
 import 'package:flutter/material.dart' ;
 import "dart:io" ;
 import 'package:image_picker/image_picker.dart';
 import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';
+import 'package:my_flutter_app/pages/front_page.dart';
 import 'package:my_flutter_app/pages/post_page.dart';
-import 'package:my_flutter_app/pages/sign_in.dart';
 
 class Postinfo{
   late String username;
-  late File userImg;
-  late File postImg;
+  late Image userImg;
+  late Image postImg;
   late String postdescription;
   bool isliked = false;
   List<Widget> commentlist = []; 
@@ -21,9 +19,9 @@ class Postinfo{
     double screenHeight = MediaQuery.of(context).size.height ;
     double screenWidth = MediaQuery.of(context).size.width ;
     username = "${A.firstname} ${A.middlename} ${A.lastname}";
-    userImg = strtoimg(A.pfp, A.pfptype);
-    postImg = strtoimg(P.pimg, P.pimgtype);
-    postdescription = P.pdescription;
+    userImg = A.pfp??const Image(image: AssetImage('images/blankPfp.jpg'),fit: BoxFit.cover,height: 50,width: 50);
+    postImg = P.pimg?? Image(image: const AssetImage('images/blankPfp.jpg'),fit: BoxFit.fill,height: screenHeight *0.12,width: screenHeight * 0.12);
+    postdescription = P.pdescription??"Description null";
     for(var x in P.plikes){
       if(x==A.aid){
         isliked = true;
@@ -46,25 +44,21 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final Color homepageBackground = const Color(0xFF83a84f); 
-  final Color homepageback = const Color(0xFF547027);
-  final Color homepageTextbg = const Color(0xFFAFD06E); 
+  final Color homepageBack = const Color(0xFF547027);
+  final Color homepageTextBg = const Color(0xFFAFD06E);
 
   final ImagePicker _picker = ImagePicker();
   File? image ;
 
   void name() {}
   // user ko naam ra profile pic
-  Widget _returnUserData(String userName, File userPic) {
+  Widget _returnUserData(String userName, Image userPic) {
     return Row(
       children: [
         
         // clivoval le photo lai round banauxa
         ClipOval(
-          child: Image.file(userPic, 
-                  fit: BoxFit.cover,
-                  height: 50,
-                  width: 50,
-          ), 
+          child: userPic
         ),
 
         const SizedBox(width: 30),
@@ -79,19 +73,7 @@ class _HomePageState extends State<HomePage> {
     );   
   }
 
-  // esle query ko photo return garxa.. bhaneko leaf ko photo
-  Widget _queryPhoto(File ppic, BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height ;
-    // clipreact user gareraa border radius rakheko
-    return ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Image.file(ppic,
-          fit: BoxFit.fill,
-          height: screenHeight *0.12,
-          width: screenHeight * 0.12,  
-        ),
-      );
-  }
+
 
   // sabai post ko lagi chuttai chuttai garna baki xa like button
   Future toggleLike()async {
@@ -111,14 +93,14 @@ class _HomePageState extends State<HomePage> {
 
   // each comment lai dekhauxaa
   static Widget returnComment (double height, double width, Account A, Comment c) {
-    File userpfp = strtoimg(A.pfp, A.pfptype);
+    Image userpfp = A.pfp??Image(image: const AssetImage('images/blankPfp.jpg'),height: height*0.1);
     return Padding(
       padding: const EdgeInsets.all(10.0),
       // row for pic and comment
       child: Row (
         children: [
           ClipOval(
-            child: Image.file(userpfp, height: height * 0.1,),
+            child: userpfp,
           ),
     
           SizedBox(width: width * 0.02,),
@@ -133,7 +115,7 @@ class _HomePageState extends State<HomePage> {
             width: width * 0.5,
             child: Padding (
               padding: const EdgeInsets.all(8.0),
-              child: Text(c.cdescription),
+              child: Text(c.cdescription??"Description null"),
             ),
           ),
         ],
@@ -153,8 +135,8 @@ class _HomePageState extends State<HomePage> {
 
     for(Post x in p){
       var temp = await Account.retreiveAcconutoi(x.aid);
-      if(temp == null){
-       // a.add(Account.userAcc);
+      if(temp.isnull == true){
+       a.add(Account.accNotFount);
       }
       else{
         a.add(temp);
@@ -165,7 +147,7 @@ class _HomePageState extends State<HomePage> {
       temp = await Comment.retreiveCommentap(a[i].aid, p[i].pid);
       for(var j = 0; j < temp.length; j++){
           atemp = await Account.retreiveAcconutoi(temp[i].aid);
-          if(atemp != null){
+          if(atemp.isnull == false){
             mtemp[temp[i]] = atemp;
           }
       }
@@ -264,11 +246,12 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
 
-                  // yo chai photo lai milauna ko lagi left side ma
                   // eslai responsibe banuanee
                   Padding(
                     padding: const EdgeInsets.only(left:20.0),
-                    child: _queryPhoto(pi.postImg,context),
+                    child: ClipRRect(
+                      child: pi.postImg,
+                    )
                   ),
                 ],
               ),
@@ -346,10 +329,10 @@ class _HomePageState extends State<HomePage> {
                                   // row for comment lekhne ani photo icon
                                   child: Row(
                                     children: [
-                                      Container(
+                                      const SizedBox(
                                         height: 70,
                                         width: 270,
-                                        child: const TextField(
+                                        child: TextField(
                                           decoration: InputDecoration(
                                             hintText: "Type a comment...",
                                             border: OutlineInputBorder(),
@@ -409,13 +392,26 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     // yo chai ali milaunu parxa hola haii query haru lai ramrarii dekhaunaa
     
-    if(Account.userAcc == null){
-      Navigator.push(context,MaterialPageRoute(builder: (context) => SignIn()),
-     );
+    if(Account.userAcc.isnull == true){
+      showDialog(
+        context: context, 
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Account error!"),
+            content: const Text("Error in getting account info."),
+            actions: [
+              TextButton(
+                onPressed: () =>Navigator.of(context).push(MaterialPageRoute(builder: (context) => const FrontPage())),
+                child: const Text("Ok"),
+              )
+            ]
+          );
+        }   
+      );
     }
     
-    File userPic = strtoimg(Account.userAcc?.pfp, Account.userAcc?.pfptype);
-    String userName = "${Account.userAcc?.firstname} ${Account.userAcc?.middlename} ${Account.userAcc?.lastname}";
+    Image userPic = Account.userAcc.pfp??const Image(image: AssetImage('images/blankPfp.jpg'),fit: BoxFit.cover,height: 50,width: 50,);
+    String userName = "${Account.userAcc.firstname} ${Account.userAcc.middlename} ${Account.userAcc.lastname}";
 
      Future<List<Widget>> futureList =  getposts(context);
      List<Widget> posts =[];

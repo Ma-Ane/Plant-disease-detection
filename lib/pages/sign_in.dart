@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart' ;
 import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';
+import 'package:my_flutter_app/MongoManagement/mongomgmt.dart';
 import 'package:my_flutter_app/pages/main_page.dart';
 import 'package:my_flutter_app/pages/register.dart';
-import 'package:my_flutter_app/pages/util/my_button.dart';
+import 'package:my_flutter_app/pages/util/various_assets.dart';
 
 class SignIn extends StatelessWidget {
   SignIn({super.key});
@@ -51,7 +52,7 @@ class SignIn extends StatelessWidget {
                 TextField(
                   controller: gmailControllerSignIn,
                   decoration: const InputDecoration(
-                    hintText: "abcde@gmail.com",
+                    hintText: "abc@gmail.com",
                     hintStyle: TextStyle(color: Colors.black26)
                   ),
                 ),
@@ -69,7 +70,7 @@ class SignIn extends StatelessWidget {
                   controller: passwordControllerSignIn,
                   decoration: const InputDecoration(
                     suffixIcon: Icon(Icons.visibility_off),
-                    hintText: "123abcD@",
+                    hintText: "123Abc@",
                     hintStyle: TextStyle(color: Colors.black26)
                   )
                 ),
@@ -77,62 +78,47 @@ class SignIn extends StatelessWidget {
                 const SizedBox(height: 40),
 
                 GestureDetector(
-                  onTap: () {
-                   showDialog(
-                     context: context, 
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text("Forgot?"),
-                         content: const Text("Please contact the administrator."),
-                          actions: [
-                            TextButton(
-                              onPressed: () {Navigator.of(context).pop();}, 
-                              child: const Text("Ok"),
-                            )
-                          ]
-                        ) ;
-                      }
-                   );
-                 },
-                 child: const Align(
-                  alignment: Alignment.centerRight,
-                  child: Text("Forgot Password?",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16
+                  child: const Align(
+                    alignment: Alignment.centerRight,
+                    child: Text("Forgot Password?",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16
+                      ),
                     ),
-                   ),
                   ),
+                  onTap: () {
+                    VariousAssets.displayError(context,"Contact the administrators");
+                 },
                 ),
 
                 const SizedBox(height: 50),
 
                 Center(
-                  child: MyButton(
-                    text: "Sign In", 
-                    onPressed: () async{
-                      Account.userAcc = await Account.retreiveAcconutep(gmailControllerSignIn.text,passwordControllerSignIn.text);
-                      if(context.mounted){
-                        if((Account.userAcc.isnull==true)){
-                          showDialog(
-                            context: context, 
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text("Account error!"),
-                                content: const Text("Error in getting account info.\nAre you sure this account exists?"),
-                                actions: [
-                                  TextButton(
-                                  onPressed: () =>Navigator.of(context).pop(),
-                                  child: const Text("Ok"),
-                                  )
-                                ]
-                              );
-                            }   
-                          );
+                  child: VariousAssets.myButton(
+                    "Sign In", 
+                    () async{
+                      if(MongoDatabase.isconnected == false || MongoDatabase.dbError != null){
+                        if(context.mounted){
+                          VariousAssets.displayError(context, "Connection Error", details: MongoDatabase.dbError);
                         }
-                        else{
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const MainPage()));
-                       }
+                      }
+                      else{
+                        try{
+                          Account.userAcc = await Account.retreiveAcconutep(gmailControllerSignIn.text,passwordControllerSignIn.text);
+                          }catch(e){
+                            if(context.mounted){
+                              VariousAssets.displayError(context,e);
+                            }
+                          }
+                        if(context.mounted){
+                          if((Account.userAcc.isnull==true)){
+                            VariousAssets.displayError(context,"Could not retrieve the specified account!");
+                          }
+                          else{
+                            Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: "/main_page"),builder: (context)=>const MainPage()));
+                          }
+                        }
                       }
                     }
                   ),
@@ -159,7 +145,7 @@ class SignIn extends StatelessWidget {
 
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const Register()));
+                            Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: "/register"),builder: (context) => const Register()));
                           },
                           child: const Text("Sign up",
                             style: TextStyle(

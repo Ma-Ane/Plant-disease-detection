@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart' ;
 import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';
 import 'package:my_flutter_app/pages/edit.dart';
-import 'package:my_flutter_app/pages/front_page.dart';
 import 'package:my_flutter_app/pages/help.dart';
 import 'package:my_flutter_app/pages/history.dart';
 import 'package:my_flutter_app/pages/settings.dart';
@@ -24,11 +23,11 @@ class _ProfilePageState extends State<ProfilePage> {
       child: GestureDetector(
         // according to button pressed
         onTap: () => {
-          if (name == 'Edit') {Navigator.push(context, MaterialPageRoute(builder: (context) => const Edit()))},
-          if (name == 'Help') {Navigator.push(context, MaterialPageRoute(builder: (context) => const Help()))},
-          if (name == 'History') {Navigator.push(context, MaterialPageRoute(builder: (context) => const History()))},
-          if (name == 'Contact Us') {Navigator.push(context, MaterialPageRoute(builder: (context) => const ContactUs()))},
-          if (name == 'Settings') {Navigator.push(context, MaterialPageRoute(builder: (context) => const Settings()))},
+          if (name == 'Edit') {Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: "/edit"),builder: (context) => const Edit()))},
+          if (name == 'Help') {Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: "/help"),builder: (context) => const Help()))},
+          if (name == 'History') {Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: "/history"),builder: (context) => const History()))},
+          if (name == 'Contact Us') {Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: "/contact_us"),builder: (context) => const ContactUs()))},
+          if (name == 'Settings') {Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: "/settings"),builder: (context) => const Settings()))},
         },
         child: Container(
           decoration: BoxDecoration(
@@ -59,26 +58,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    if(Account.userAcc.isnull == true){
-      showDialog(
-        context: context, 
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("Account error!"),
-            content: const Text("Error in getting account info."),
-            actions: [
-              TextButton(
-                onPressed: () =>Navigator.of(context).push(MaterialPageRoute(builder: (context) => const FrontPage())),
-                child: const Text("Ok"),
-              )
-            ]
-          );
-        }   
-      );
-     
-    }
     
-    Image userPic = Account.userAcc.pfp??const Image(image: AssetImage('images/blankPfp.jpg'));
+    Image userPic = Image(image: Account.userAcc.pfp !=null?
+      FileImage(Account.userAcc.pfp!):
+      const AssetImage("images/blankPfp.jpg")
+    );
+
     String userName = "${Account.userAcc.firstname} ${Account.userAcc.middlename} ${Account.userAcc.lastname}";
 
         // determine the screen height and width

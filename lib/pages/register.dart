@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart' ;
 import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';
+import 'package:my_flutter_app/MongoManagement/mongomgmt.dart';
 import 'package:my_flutter_app/pages/main_page.dart';
-import 'package:my_flutter_app/pages/util/my_button.dart';
+import 'package:my_flutter_app/pages/util/various_assets.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -110,74 +111,77 @@ class _RegisterState extends State<Register> {
             color: Color.fromARGB(255, 52, 66, 80)
           ),
           child: Column(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(top:80.0),
-                  child: Text("Registration Page",
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 173, 204, 217),
-                      fontSize: 27,
-                      fontWeight: FontWeight.bold,
-                    )
-                  ),
-                ),
-        
-                const SizedBox(height: 50),
-          
-                const Text("Please provide the following information.",
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(top:80.0),
+                child: Text("Registration Page",
                   style: TextStyle(
                     color: Color.fromARGB(255, 173, 204, 217),
-                    //color: Color.fromARGB(255, 175, 76, 69),
-                    fontSize: 21,
-                    fontWeight: FontWeight.w900,
+                    fontSize: 27,
+                    fontWeight: FontWeight.bold,
                   )
                 ),
+              ),
+        
+              const SizedBox(height: 50),
           
-                const SizedBox(height: 60),
+              const Text("Please provide the following information.",
+                style: TextStyle(
+                  color: Color.fromARGB(255, 173, 204, 217),
+                  fontSize: 21,
+                  fontWeight: FontWeight.w900,
+                )
+              ),
           
-                SizedBox(
-                  height: 550, 
-                  width: double.infinity,
-                  //color: Colors.yellow,
-                  
-                  child: Padding(
-                    padding: const EdgeInsets.only(left:8.0, right: 10),
-                    child: Column(
-                      //mainAxisAlignment: MainAxisAlignment.center,
-                      //crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        customInputField(
-                          label:"First Name",
+              const SizedBox(height: 60),
+          
+              SizedBox(
+                height: 550, 
+                width: double.infinity,
+                                    
+                child: Padding(
+                  padding: const EdgeInsets.only(left:8.0, right: 10),
+                  child: Column(
+                     
+                    children: [
+                      customInputField(
+                        label:"First Name",
                           
-                          hintText: "KP",
-                          controller: firstNameController
-                        ),
+                        hintText: "John",
+                        controller: firstNameController
+                      ),
                     
-                        const SizedBox(height: 10),
+                      const SizedBox(height: 10),
                     
-                        customInputField(label: "Middle Name (Optional)", hintText: "Sharma", controller: middleNameController),
+                      customInputField(label: "Middle Name (Optional)", hintText: "Deer", controller: middleNameController),
                     
-                        const SizedBox(height: 10),
+                      const SizedBox(height: 10),
                     
-                        customInputField(label: "Last Name", hintText: "Oli", controller: lastNameController), 
+                      customInputField(label: "Last Name", hintText: "Doe", controller: lastNameController), 
                     
-                        const SizedBox(height: 10),                    
+                      const SizedBox(height: 10),                    
           
-                        const SizedBox(height: 10),
+                      const SizedBox(height: 10),
                     
-                        customInputField(label: "Email", hintText: "kpoli@gmail.com", controller: emailController),
+                      customInputField(label: "Email", hintText: "abc@example.com", controller: emailController),
                   
-                        const SizedBox(height: 10),
+                      const SizedBox(height: 10),
                     
-                        customInputField(label: "Password", hintText: "********", controller: passwordController, isPassword: true),
-                      ],
-                    ),
+                      customInputField(label: "Password", hintText: "*****", controller: passwordController, isPassword: true),
+                    ],
                   ),
                 ),
+              ),
           
-                MyButton(
-                  text: "Register", 
-                  onPressed: () async{
+              VariousAssets.myButton(
+                "Register", 
+                () async{
+                  if(MongoDatabase.isconnected == false || MongoDatabase.dbError != null){
+                    if(context.mounted){
+                      VariousAssets.displayError(context, "Connection Error", details: MongoDatabase.dbError);
+                    }
+                  }
+                  else{
                     int sum = _checkValidity() ;
                     switch (sum) {
                       case 0:
@@ -186,42 +190,14 @@ class _RegisterState extends State<Register> {
                         Account.userAcc = await Account.retreiveAcconutep(emailController.text,passwordController.text);
                       
                         if(context.mounted&&Account.userAcc.isnull==false){
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const MainPage()));
+                          Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: "/main_page"),builder: (context)=>const MainPage()));
                         }
                         else if(context.mounted){
-                          showDialog(
-                            context: context, 
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text("Account error!"),
-                                content: const Text("Error in getting account info."),
-                                actions: [
-                                  TextButton(
-                                  onPressed: () =>Navigator.of(context).pop(),
-                                  child: const Text("Ok"),
-                                  )
-                                ]
-                              );
-                            }   
-                          );
+                          VariousAssets.displayError(context, "Connection error!", details: "Cannot confirm creation of account");
                         }
                       }catch(e){
                         if(context.mounted){
-                          showDialog(
-                            context: context, 
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text("Connection error!"),
-                                content: Text(e.toString()),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {Navigator.of(context).pop();}, 
-                                    child: const Text("Ok"),
-                                  )
-                                ]
-                              );
-                            }   
-                          );
+                          VariousAssets.displayError(context, "Connection error!",details: e);
                         }
                       }
                       
@@ -233,29 +209,14 @@ class _RegisterState extends State<Register> {
           
                         if (sum == 4) {name = "Email"; other = "Email is not in right format.";}
                         if (sum == 5) {name = "Password"; other = "Password is not in right format.";}
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text("Invalid $name"),
-                              content: Text(other),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop(); 
-                                  },
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
+                        
+                        VariousAssets.displayError(context, "Invalid $name", details: other);
                     }
-
                   }
-                ),
-              ],
+                }
               ),
+            ],
+          ),
         ),
       )
     );

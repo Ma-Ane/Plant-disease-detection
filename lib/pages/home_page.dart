@@ -2,7 +2,6 @@ import 'package:flutter/material.dart' ;
 import "dart:io" ;
 import 'package:image_picker/image_picker.dart';
 import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';
-import 'package:my_flutter_app/pages/front_page.dart';
 import 'package:my_flutter_app/pages/post_page.dart';
 
 class Postinfo{
@@ -19,8 +18,8 @@ class Postinfo{
     double screenHeight = MediaQuery.of(context).size.height ;
     double screenWidth = MediaQuery.of(context).size.width ;
     username = "${A.firstname} ${A.middlename} ${A.lastname}";
-    userImg = A.pfp??const Image(image: AssetImage('images/blankPfp.jpg'),fit: BoxFit.cover,height: 50,width: 50);
-    postImg = P.pimg?? Image(image: const AssetImage('images/blankPfp.jpg'),fit: BoxFit.fill,height: screenHeight *0.12,width: screenHeight * 0.12);
+    userImg = Image(image: FileImage(A.pfp??File('images/blankPfp.jpg')),fit: BoxFit.cover,height: 50,width: 50);
+    postImg = Image(image: FileImage(P.pimg??File('images/blankPfp.jpg')),fit: BoxFit.fill,height: screenHeight *0.12,width: screenHeight * 0.12);
     postdescription = P.pdescription??"Description null";
     for(var x in P.plikes){
       if(x==A.aid){
@@ -55,13 +54,12 @@ class _HomePageState extends State<HomePage> {
   Widget _returnUserData(String userName, Image userPic) {
     return Row(
       children: [
-        
-        // clivoval le photo lai round banauxa
+
         ClipOval(
           child: userPic
         ),
 
-        const SizedBox(width: 30),
+        const SizedBox(width: 15),
 
         // user name
         Text(userName, 
@@ -93,7 +91,11 @@ class _HomePageState extends State<HomePage> {
 
   // each comment lai dekhauxaa
   static Widget returnComment (double height, double width, Account A, Comment c) {
-    Image userpfp = A.pfp??Image(image: const AssetImage('images/blankPfp.jpg'),height: height*0.1);
+    Image userpfp = Image(image: Account.userAcc.pfp !=null?
+      FileImage(Account.userAcc.pfp!):
+      const AssetImage("images/blankPfp.jpg"),
+      height: height*0.1
+    );
     return Padding(
       padding: const EdgeInsets.all(10.0),
       // row for pic and comment
@@ -390,27 +392,14 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // yo chai ali milaunu parxa hola haii query haru lai ramrarii dekhaunaa
     
-    if(Account.userAcc.isnull == true){
-      showDialog(
-        context: context, 
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("Account error!"),
-            content: const Text("Error in getting account info."),
-            actions: [
-              TextButton(
-                onPressed: () =>Navigator.of(context).push(MaterialPageRoute(builder: (context) => const FrontPage())),
-                child: const Text("Ok"),
-              )
-            ]
-          );
-        }   
-      );
-    }
-    
-    Image userPic = Account.userAcc.pfp??const Image(image: AssetImage('images/blankPfp.jpg'),fit: BoxFit.cover,height: 50,width: 50,);
+    Image userPic = Image(image: Account.userAcc.pfp !=null?
+      FileImage(Account.userAcc.pfp!):
+      const AssetImage("images/blankPfp.jpg"),
+      fit: BoxFit.cover,
+      height: 50,width: 50
+    );
+
     String userName = "${Account.userAcc.firstname} ${Account.userAcc.middlename} ${Account.userAcc.lastname}";
 
      Future<List<Widget>> futureList =  getposts(context);
@@ -426,6 +415,7 @@ class _HomePageState extends State<HomePage> {
 
       // overall container pura screen ko lagi
       return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Padding(
             padding: const EdgeInsets.only(top:15.0, left: 10, right: 10),
@@ -447,24 +437,27 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         _returnUserData(userName, userPic),
       
-                        const SizedBox(width: 50),
+                        const SizedBox(width: 5),
 
                         // yo chai plus button forposting
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: const Color(0xFFB4d3b2),
-                          ),
-                          child: Padding(
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child:Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: const Color(0xFFB4d3b2),
+                            ),
+                            child: Padding(
                             padding: const EdgeInsets.all(6.0),
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => const PostPage())) ;
+                                Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: "/post_page"),builder: (context) => const PostPage())) ;
                               },
                               child: const Icon(Icons.add)
                             ),
                           )
                         ),
+                        )
                       ],
                     ),
                   ),
@@ -485,7 +478,7 @@ class _HomePageState extends State<HomePage> {
                             padding: const EdgeInsets.only(top:8.0, left: 25),
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => const PostPage())) ;
+                                Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: "/post_page"),builder: (context) => const PostPage())) ;
                               },
                               child: const Text('Post your query?',
                                 style: TextStyle(
@@ -502,7 +495,7 @@ class _HomePageState extends State<HomePage> {
                         // gallery icon
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const PostPage())) ;
+                            Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: "/post_page"),builder: (context) => const PostPage())) ;
                           },
                           child: const Icon(Icons.photo_album,
                             size: 35,
@@ -517,7 +510,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-        // eslee harek user ko query return garxxa
         ...posts
 
         ],

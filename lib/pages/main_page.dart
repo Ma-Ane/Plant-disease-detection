@@ -42,6 +42,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+
     var pagesmap= ['Search Page', 'Home Page', 'Profile Page'];
     return Scaffold(
       appBar: AppBar(

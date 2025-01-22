@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
+import 'dart:convert';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:my_flutter_app/MongoManagement/mongomgmt.dart';
-import 'dart:convert';
+
 
 abstract class DbObject{
   Map<String, dynamic> toJson() => {};
@@ -21,7 +22,7 @@ class Account extends DbObject{
   String? lastname;
   String? email;
   String? password;
-  Image? pfp;
+  File? pfp;
 
   bool isnull;
 
@@ -66,7 +67,7 @@ class Account extends DbObject{
     "pfp": pfp,
   };
 
-  static Future<void> insertAcconut(String fname, String mname, String lname, String emaddr, String pw, Image? img) async{
+  static Future<void> insertAcconut(String fname, String mname, String lname, String emaddr, String pw, File? img) async{
     Account check = await retreiveAcconutep(emaddr, pw);
     if(check.isnull == true){
       var id_ = ObjectId();
@@ -78,10 +79,10 @@ class Account extends DbObject{
         rethrow;
      }
     }
-    //else{
-      //throw "This account already exists!";
+    else{
+      throw "This account already exists!";
     
-    //}
+    }
   }
 
   static Future<Account> retreiveAcconutep(String emaddr, String pw) async{
@@ -115,7 +116,7 @@ class Post extends DbObject{
   List<ObjectId> plikes;
   String? pdescription;
   String? ptitle;
-  Image? pimg;
+  File? pimg;
 
   bool isnull;
 
@@ -169,7 +170,7 @@ class Post extends DbObject{
     return json;
   }
 
-  static Future<void> insertPost(ObjectId id_, String desc, String tit, Image? ima) async{
+  static Future<void> insertPost(ObjectId? id_, String desc, String tit, File? ima) async{
   var piid = ObjectId();
   final data = Post(pid: piid, aid: id_,plikes: [] ,pdescription: desc, ptitle: tit, pimg: ima);
   try{
@@ -263,13 +264,15 @@ class Disease extends DbObject {
   ObjectId? did;
   String? jsonNo;
   String? ddescription;
+  File? dimg;
   bool isnull;
-
+  
   Disease({
     this.did,
     this.jsonNo,
     this.ddescription,
-    this.isnull= true
+    this.isnull= true,
+    this.dimg
   });
 
   factory Disease.fromJson(Map<String, dynamic>? json) {
@@ -279,6 +282,7 @@ class Disease extends DbObject {
         did: json["did"],
         jsonNo: json["json_no"],
         ddescription: json["ddescription"],
+        dimg: json["dimg"],
         isnull: false
       );
     }
@@ -290,10 +294,16 @@ class Disease extends DbObject {
     "did": did,
     "json_no": jsonNo,
     "ddescription": ddescription,
+    "dimg": dimg
   };
 
-  static Future<Disease> retreiveDisease(String jsonNo) async{
-    var val = await MongoDatabase.findDisease(jsonNo);
-    return val;
+  static Future<Disease> retreiveDisease(int jsonNo) async{
+    try{
+      var val = await MongoDatabase.findDisease(jsonNo);
+      return val;
+    }catch(e){
+      rethrow;
+    }
   }
+
 }

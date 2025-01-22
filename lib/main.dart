@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:my_flutter_app/MongoManagement/mongomgmt.dart';
 import 'package:my_flutter_app/pages/front_page.dart';
 
-void main() {
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
+
+  MongoDatabase.connect();
 
   runApp(const MyApp());
 }
@@ -10,7 +13,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -21,6 +23,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const FrontPage(),
+      
     );
   }
 }

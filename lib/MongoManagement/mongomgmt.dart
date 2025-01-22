@@ -7,15 +7,17 @@ const usrColl="ProjectData";
 
 class MongoDatabase {
   static late DbCollection userCollection;
+  static bool isconnected = false;
+  static Object? dbError;
 
-  static Future<bool> connect() async{
+  static Future<void> connect() async{
     try{
       Db db = await Db.create(mongoConnUrl);
       await db.open();
       userCollection = db.collection(usrColl);
-      return db.isConnected;
+      isconnected = true;
     }catch(e){
-     rethrow;
+     dbError = e;
     }
   }
   
@@ -84,12 +86,12 @@ class MongoDatabase {
     return r;   
   }
 
-  static Future<Disease> findDisease(String jsonnum) async{
+  static Future<Disease> findDisease(int jsonnum) async{
     try{ 
      var result = Disease.fromJson(await userCollection.findOne({'jsonNo':jsonnum}));
      return result;     
     }catch(e){
-      return Disease(isnull: true);
+      return Disease();
     }
   }
 }

@@ -1,7 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart' ;
 import 'package:image_picker/image_picker.dart';
+import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';
+import 'package:my_flutter_app/TFlite/tf_work.dart';
 import 'package:my_flutter_app/pages/after_detection.dart';
+import 'package:my_flutter_app/pages/util/various_assets.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -10,7 +13,7 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin{
   final Color primaryColor = const Color(0xFFA6BC36); 
   final Color secondaryColor = const Color(0xFF3498DB);
   final Color thirdColor = const Color(0xFFAFD06E); 
@@ -18,7 +21,6 @@ class _SearchPageState extends State<SearchPage> {
     final ImagePicker _picker = ImagePicker();
     File? image ;
 
-  // gallery bata photo upload garna ko lagi
   Future _galleryOption() async {
      final pickedFile = await _picker.pickImage(source: ImageSource.gallery) ;
 
@@ -29,13 +31,30 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
+  void handleSearch() async{
+    Disease d = Disease();
+    try{
+      const CircularProgressIndicator();
+      d = await TfWork.getPredictions(image!, 260, 37, "efficientNetB2");
+    }catch(e){
+      if(context.mounted){
+        VariousAssets.displayError(context, "Disease detection error",details: e);
+      }
+    }
+    if(context.mounted&&d.isnull==false){
+      Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: "/after_detection"),builder: (context) => AfterDetection(d))) ;
+    }
+    else if(context.mounted){ 
+      VariousAssets.displayError(context, "Disease deteciton error", details: "Couldn't retreive diseases from the database.");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
 
-    // kun mob bata open gareko tesko height ra weight use gareko
     double screenHeight = MediaQuery.of(context).size.height ;
     double screenWidth = MediaQuery.of(context).size.width ;
-
+            
     return Column(
       children: [
         Padding(
@@ -107,49 +126,10 @@ class _SearchPageState extends State<SearchPage> {
           alignment: Alignment.center,
 
           // yedi image select gareko xiana bhaye select image bhanera message aauxa
-          child: MaterialButton(
-            onPressed: () {
-              image == null ?
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text("Please choose a photo first",
-                        style: TextStyle(
-                          fontSize: 20,
-                        )
-                      ),
-                      actions:[
-                        TextButton(onPressed: () { 
-                          Navigator.of(context).pop() ;
-                        }, 
-                        child: const Text("OK"))
-                      ],
-                    ) ;
-                  }
-                ) :
-
-                // yedi image xa bhayee aarko page ma change gar
-                Navigator.push(context, MaterialPageRoute(builder: (context) => AfterDetection(image: image))) ;
-            },
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            height: screenHeight * 0.05,
-            minWidth: screenWidth * 0.1,
-
-            // color for button
-            color: const Color(0xFFB4d3b2),
-            child: const Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Text("Detect",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600
-                )
-              ),
-            ),
-          )
+          child: VariousAssets.myButton("Detect",(){image == null ? 
+              VariousAssets.displayError(context, "Please select an image first") :
+              handleSearch();}
+            ), 
         ),
       ],
     );

@@ -18,8 +18,27 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin{
   final Color secondaryColor = const Color(0xFF3498DB);
   final Color thirdColor = const Color(0xFFAFD06E); 
 
-    final ImagePicker _picker = ImagePicker();
-    File? image ;
+  Future handleSearch(BuildContext context) async{
+    int detectedDiseaseNo;
+    Disease detectedDisease;
+      
+    try{
+      const CircularProgressIndicator();
+      detectedDiseaseNo = await TfWork.getPredictions(image!, 300, 36, "efficientNetB3");
+      detectedDisease = await Disease.retreiveDisease(detectedDiseaseNo);
+      if(context.mounted){
+        Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: "/after_detection"),builder: (context) => AfterDetection(detectedDisease)));
+      }
+      
+    }catch(e){
+      if(context.mounted){
+        VariousAssets.displayError(context, "Disease detection error",details: e);
+      }
+    }
+  }
+
+  final ImagePicker _picker = ImagePicker();
+  File? image ;
 
   Future _galleryOption() async {
      final pickedFile = await _picker.pickImage(source: ImageSource.gallery) ;
@@ -31,22 +50,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin{
     }
   }
 
-  void handleSearch() async{
-    Disease d = Disease();
-    try{
-      const CircularProgressIndicator();
-      d = await TfWork.getPredictions(image!, 260, 37, "efficientNetB2");
-    }catch(e){
-      if(context.mounted){
-        VariousAssets.displayError(context, "Disease detection error",details: e);
-      }
-    }
-    if(context.mounted&&d.isnull==false){
-      Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: "/after_detection"),builder: (context) => AfterDetection(d))) ;
-    }
-    else if(context.mounted){ 
-      VariousAssets.displayError(context, "Disease deteciton error", details: "Couldn't retreive diseases from the database.");
-    }
+  dynamic pushGuarded(){
+
   }
 
   @override
@@ -126,9 +131,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin{
           alignment: Alignment.center,
 
           // yedi image select gareko xiana bhaye select image bhanera message aauxa
-          child: VariousAssets.myButton("Detect",(){image == null ? 
+          child: VariousAssets.myButton("Detect",
+            (){image == null ? 
               VariousAssets.displayError(context, "Please select an image first") :
-              handleSearch();}
+              handleSearch(context);
+            }
             ), 
         ),
       ],

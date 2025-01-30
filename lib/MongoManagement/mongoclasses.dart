@@ -262,13 +262,20 @@ Disease diseaseFromJson(String str) => Disease.fromJson(json.decode(str));
 String diseaseToJson(Disease data) => json.encode(data.toJson());
 class Disease extends DbObject {
   ObjectId? did;
-  String? jsonNo;
+  String? dname;
+  int? jsonNo;
   String? ddescription;
   File? dimg;
   bool isnull;
+
+  @override
+  String toString() {
+    return "$dname: $ddescription";
+  }
   
   Disease({
     this.did,
+    this.dname,
     this.jsonNo,
     this.ddescription,
     this.isnull= true,
@@ -280,6 +287,7 @@ class Disease extends DbObject {
     if(json !=null){
       d =  Disease(
         did: json["did"],
+        dname: json["dname"],
         jsonNo: json["json_no"],
         ddescription: json["ddescription"],
         dimg: json["dimg"],
@@ -292,6 +300,7 @@ class Disease extends DbObject {
   @override
   Map<String, dynamic> toJson() => {
     "did": did,
+    "dname": dname,
     "json_no": jsonNo,
     "ddescription": ddescription,
     "dimg": dimg
@@ -301,6 +310,14 @@ class Disease extends DbObject {
     try{
       var val = await MongoDatabase.findDisease(jsonNo);
       return val;
+    }catch(e){
+      rethrow;
+    }
+  }
+
+  static Future<void> enterNewDisease(Disease d) async{
+    try{
+      MongoDatabase.insertToDb(d);
     }catch(e){
       rethrow;
     }

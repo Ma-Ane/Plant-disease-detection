@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' ;
+import 'package:my_flutter_app/pages/offline_mode.dart';
 import 'package:my_flutter_app/pages/register.dart';
 import 'package:my_flutter_app/pages/sign_in.dart';
 import 'package:my_flutter_app/pages/util/various_assets.dart';
@@ -36,9 +37,7 @@ class _FrontPageState extends State<FrontPage> {
           Align(
             alignment: Alignment.center,
             child:
-             VariousAssets.myButton(
-                "Sign In", 
-                () {
+             VariousAssets.myButton("Sign In", () {
                   Navigator.push(context,MaterialPageRoute(settings: const RouteSettings(name: "/sign_in"),builder: (context) => SignIn()));
                 }
               )
@@ -47,6 +46,11 @@ class _FrontPageState extends State<FrontPage> {
           // register button
           VariousAssets.myButton("Register", () {
               Navigator.push(context,MaterialPageRoute(settings: const RouteSettings(name: "/register"),builder: (context) => const Register()));
+            }
+          ),
+
+          VariousAssets.myButton("Offline", () {
+              Navigator.push(context,MaterialPageRoute(settings: const RouteSettings(name: "/offline_mode"),builder: (context) => const OfflineMode()));
             }
           ),
         ],

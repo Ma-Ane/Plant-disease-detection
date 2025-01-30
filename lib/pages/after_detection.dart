@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart' ;
-import 'dart:io';
-
-import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';   
-
+import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';
 class AfterDetection extends StatelessWidget {
   final Disease detectedDisease;
   const AfterDetection(this.detectedDisease,{super.key,});
 
   @override
   Widget build(BuildContext context) {
+
     double screenHeight = MediaQuery.of(context).size.height ;
     double screenWidth = MediaQuery.of(context).size.width ;
 
@@ -17,17 +15,24 @@ class AfterDetection extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            
             SizedBox(height: screenHeight * 0.02),
-                
-            ClipRRect(
+ 
+        ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.file(detectedDisease.dimg??File('images/blankPfp.jpg'),
-                fit: BoxFit.cover,
-                height: screenHeight * 0.35, 
-                width: screenWidth * 0.8,
-              ),
-            ),
-                
+              child: detectedDisease.dimg!=null?
+                Image.file(detectedDisease.dimg!,
+                  fit: BoxFit.cover,
+                  height: screenHeight * 0.35, 
+                  width: screenWidth * 0.8,
+                ):
+                Image.asset('images/blankPfp.jpg',
+                  fit: BoxFit.cover,
+                  height: screenHeight * 0.35, 
+                  width: screenWidth * 0.8,
+                ),
+            ),             
+               
             Padding(
               padding: EdgeInsets.only(top: screenHeight * 0.015,left: screenWidth * 0.03, right: screenWidth * 0.03),
               child: Container(
@@ -45,10 +50,12 @@ class AfterDetection extends StatelessWidget {
                   child: Text(detectedDisease.ddescription??"")
                 ),
               ),
-            ),         
+            ),        
+
           ],
         ),
       ),
     );
+  
   }
 }

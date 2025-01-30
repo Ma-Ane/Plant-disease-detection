@@ -41,7 +41,7 @@ class VariousAssets {
     return tempFile;
   }
 
-  static Widget myButton(String text,VoidCallback onPressed){
+  static Widget myButton(String text, VoidCallback onPressed){
     return Padding(
       padding: const EdgeInsets.only(left: 10, right: 10, top:20),
       child: MaterialButton(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart' ;
-import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';
 import 'package:my_flutter_app/pages/edit.dart';
 import 'package:my_flutter_app/pages/help.dart';
 import 'package:my_flutter_app/pages/history.dart';
@@ -58,13 +57,13 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    
-    Image userPic = Image(image: Account.userAcc.pfp !=null?
-      FileImage(Account.userAcc.pfp!):
-      const AssetImage("images/blankPfp.jpg")
-    );
-
-    String userName = "${Account.userAcc.firstname} ${Account.userAcc.middlename} ${Account.userAcc.lastname}";
+    //
+    // Image userPic = Image(image: Account.userAcc.pfp !=null?
+    //   FileImage(Account.userAcc.pfp!):
+    //   const AssetImage("images/blankPfp.jpg")
+    // );
+    //
+    // String userName = "${Account.userAcc.firstname} ${Account.userAcc.middlename} ${Account.userAcc.lastname}";
 
         // determine the screen height and width
     double screenHeight = MediaQuery.of(context).size.height ;
@@ -84,25 +83,25 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     SizedBox(height: screenHeight * 0.03),
         
-                    ClipOval(
-                      child: FittedBox(
-                        fit: BoxFit.cover,
-                        child: SizedBox(
-                          height: screenWidth * 0.25,
-                          width: screenWidth * 0.25,
-                          child: userPic,
-                        ),
-                      ), 
-                    ),
+                    // ClipOval(
+                    //   child: FittedBox(
+                    //     fit: BoxFit.cover,
+                    //     child: SizedBox(
+                    //       height: screenWidth * 0.25,
+                    //       width: screenWidth * 0.25,
+                    //       child: userPic,
+                    //     ),
+                    //   ),
+                    // ),
                 
                     SizedBox(height: screenHeight * 0.02),
-        
-                    Text(userName,
-                        style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),),
+                    //
+                    // Text(userName,
+                    //     style: const TextStyle(
+                    //     color: Colors.white,
+                    //     fontSize: 28,
+                    //     fontWeight: FontWeight.bold,
+                    //   ),),
                   ],
                 ),
               ),

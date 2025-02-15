@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart' ;
-import 'package:my_flutter_app/MongoManagement/mongoclasses.dart';
+import 'package:my_flutter_app/MongoDb/mongo_work.dart';
 class AfterDetection extends StatelessWidget {
   final Disease detectedDisease;
   const AfterDetection(this.detectedDisease,{super.key,});

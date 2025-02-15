@@ -29,27 +29,22 @@ class TfWork {
       return List.generate(imageTargetDimension, (x) {
         var pixel = resizedImage.getPixel(x, y);
         return [
-          pixel.r / 255.0,
-          pixel.g / 255.0,
-          pixel.b / 255.0
+          pixel.r,
+          pixel.g,
+          pixel.b
         ];
       });
     })];
-
-    final String tempDir = Directory.current.path;
-    final File tempFile = File('$tempDir/meow');
-
-    tempFile.writeAsString(input.toString());
 
     var output = [List.filled(outputDimension, 0.0)];
     interpreter.run(input,output);
 
     var index = 0;
-    var maxtemp = output[0][0];
+    var maxTemp = output[0][0];
     int i = 0;
 
     for (var x in output[0]){
-      x>maxtemp?index=i:();
+      x>maxTemp?index=i:();
       i++;
     }
 

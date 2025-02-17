@@ -4,7 +4,6 @@ import 'dart:io';
 
 class TfWork {
   static Map<String,dynamic> modelMap= {
-    "efficientNetB2": "models/efficient_b2.tflite",
     "efficientNetB3": "models/efficient_b3.tflite"
   };
 

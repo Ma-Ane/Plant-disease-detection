@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_flutter_app/MongoDb/mongo_work.dart';
 import 'package:my_flutter_app/main.dart';
 import 'package:my_flutter_app/pages/util/various_assets.dart';
-import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -13,32 +11,53 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home>{
 
+  Widget _makePost(){
+    return Container(
+      decoration: const BoxDecoration(
+          color: Color(0x44ffffff),
+          shape: BoxShape.circle
+      ),
+      child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushNamed('/posts');
+          },
+          child: const Icon(Icons.add, size: 50,)
+      ),
+    );
+  }
+
+  Future<List<Widget>> _getPosts() async{
+    List<Widget> foo = [];
+
+    try{
+      
+    }catch(e){
+      rethrow;
+    }
+
+    return foo;
+  }
+
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Home"),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-
-          Consumer<OnDeviceStorage>(builder: (context, userFile, _) => widgetNamePic(context, userFile.userAcc)),
-
-          const SizedBox(height: 20),
-
-          Align(
-            alignment: Alignment.topLeft,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.of(context).pushNamed('/posts');
-              },
-              child: const Icon(Icons.add)
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 20),
+        
+            Consumer<OnDeviceStorage>(builder: (context, userFile, _) =>
+              homeWidgets(context: context, name: userFile.userAcc.userName, pic: userFile.userAcc.profileImage, data: "Make a Post", extra: _makePost())
             ),
-          ),
-        ],
+
+            const SizedBox(height: 20),
+
+
+          ],
+        ),
       )
     );
   }

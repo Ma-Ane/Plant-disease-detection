@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class MongoDatabase {
-  static const mongoConnUrl ="mongodb+srv://ishangh64:M6HMC~52pj@cluster0.f1b4s.mongodb.net/?retryWrit  es=true&w=majority&appName=Cluster0";
-  static const usrColl="ProjectData";
   static late DbCollection userCollection;
   static bool isConnected = false;
   static Object? dbError;
@@ -13,8 +11,10 @@ class MongoDatabase {
   ///Repeatedly try to connect to the MongoAtlas servers.
   ///On error encountered dbError Object is set to the value of the error.
   static Future<void> connect() async{
+    const mongoConnUrl = "mongodb+srv://ishangh64:M6HMC~52pj@cluster0.f1b4s.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+    const usrColl= "ProjectData";
     try{
-      while(isConnected = false){
+      while(!isConnected){
         Db db = await Db.create(mongoConnUrl);
         await db.open();
         userCollection = db.collection(usrColl);
@@ -64,6 +64,7 @@ abstract class DbObject{
 
   ///turns the respective [DbObject] child object into format suitable for insertion into Db.
   Map<String, dynamic> toJson() => {};
+
 }
 
 ///A class containing the information of a single user
@@ -71,7 +72,7 @@ Account accountFromJson(String str) => Account.fromJson((json.decode(str)));
 String accountToJson(Account data) => json.encode(data.toJson());
 
 class Account extends DbObject{
-  ObjectId? accountId;
+  String? accountId;
   String? firstname;
   String? middlename;
   String? lastname;
@@ -92,22 +93,11 @@ class Account extends DbObject{
     this.isnull = true
   });
 
-  void modify({ObjectId? id, String? fName, String? mName, String? lName, String? mail, String? pw, File? pp}){
-    accountId = id;
-    firstname = fName;
-    middlename = mName;
-    lastname = lName;
-    email = mail;
-    password = pw;
-    pfp = pp;
-    isnull = false;
-  }
-
   factory Account.fromJson(Map<String, dynamic>? json) { 
     Account x =  Account();
     if(json != null){
-      File? temp;
       ///to store as bindata in mongodb
+      File? temp;
       if(json["pfp"]!=null){
         temp = File("${Directory.systemTemp.path}/${ObjectId()}");
         temp.writeAsBytes(base64Decode(json["pfp"]));
@@ -140,13 +130,13 @@ class Account extends DbObject{
 
   String get userName => "${firstname==null?():"$firstname "}${middlename==null?():"$middlename "}${lastname==null?():"$lastname "}";
 
-  Image get profileImage => pfp==null?Image.asset('/images/blankPfp.jpg'):Image.file(pfp!);
-  
+  Widget get profileImage => pfp==null?const Icon(Icons.person,size: 40,):Image.file(pfp!, height: 40,);
+
   ///inserts a [Account] with the given information into the database
   static Future<void> insertAccount(String? firstName, String? middleName, String? lastName, String emailAddress, String password, File? img) async{
     Account check = Account.fromJson(await MongoDatabase.getFromDbOne({"email": emailAddress, "password": password}));
     if(check.isnull == true){
-      var id_ = ObjectId();
+      var id_ = ObjectId().toJson();
       final data = Account(accountId: id_, firstname: firstName,middlename: middleName, lastname: lastName, email: emailAddress,password: password, pfp: img);
       try{
         await MongoDatabase.insertToDb(data);
@@ -172,7 +162,7 @@ class Account extends DbObject{
   }
 
   ///retreives a [Account] with the given [accountId]
-  static Future<Account> retreiveAccountoi(ObjectId accountId) async{
+  static Future<Account> retreiveAccountoi(String accountId) async{
     Account val = Account();
     try{
       val = Account.fromJson(await MongoDatabase.getFromDbOne({"accountId": accountId}));
@@ -188,8 +178,8 @@ String postToJson(Post data) => json.encode(data.toJson());
 
 ///An object containing the information of a single post
 class Post extends DbObject{
-  ObjectId? postId;
-  ObjectId? accountId;
+  String? postId;
+  String? accountId;
   String? pdescription;
   String? ptitle;
   File? pimg;
@@ -240,8 +230,8 @@ class Post extends DbObject{
   }
 
   ///insert a [Post] with the given information into the database
-  static Future<void> insertPost(ObjectId? accountid, String description, String title, File? image) async{
-    var piid = ObjectId();
+  static Future<void> insertPost(String? accountid, String description, String title, File? image) async{
+    var piid = ObjectId().toJson();
     final data = Post(postId: piid, accountId: accountid,pdescription: description, ptitle: title, pimg: image);
     try{
       await MongoDatabase.insertToDb(data);
@@ -275,11 +265,11 @@ String commentToJson(Comment data) => json.encode(data.toJson());
 
 ///An object representing a comment
 class Comment extends DbObject{
-  ObjectId? commentId;
-  ObjectId? postId;
-  ObjectId? accountId;
+  String? commentId;
+  String? postId;
+  String? accountId;
   String? cdescription;
-  ObjectId? posid;
+  String? posid;
   bool isnull;
 
   Comment({
@@ -316,8 +306,8 @@ class Comment extends DbObject{
   };
 
   ///inserts a [Comment] into the database
-  static Future<void> insertComment( ObjectId id_, ObjectId piid, String desc, ObjectId positionid) async{
-    var ciid = ObjectId();
+  static Future<void> insertComment( String id_, String piid, String desc, String positionid) async{
+    var ciid = ObjectId().toJson();
     final data = Comment(commentId: ciid, accountId: id_, postId: piid,cdescription: desc, posid: positionid);
     try{
       MongoDatabase.insertToDb(data);
@@ -327,7 +317,7 @@ class Comment extends DbObject{
   }
 
   ///retreives a comment with the given [accountId], [postId] and [commentId]
-  static Future<Comment> retreiveCommentapc(ObjectId accountId, ObjectId postId, ObjectId commentId) async{
+  static Future<Comment> retreiveCommentapc(String accountId, String postId, String commentId) async{
     Comment val = Comment();
     try{
       val = Comment.fromJson(await MongoDatabase.getFromDbOne({"accountId": accountId, "postId": postId, "commentId": commentId}));
@@ -342,7 +332,6 @@ class Comment extends DbObject{
 Disease diseaseFromJson(String str) => Disease.fromJson(json.decode(str));
 String diseaseToJson(Disease data) => json.encode(data.toJson());
 class Disease extends DbObject {
-  ObjectId? did;
   String? dname;
   int? jsonId;
   String? ddescription;
@@ -355,7 +344,6 @@ class Disease extends DbObject {
   }
   
   Disease({
-    this.did,
     this.dname,
     this.jsonId,
     this.ddescription,
@@ -373,7 +361,6 @@ class Disease extends DbObject {
         temp.writeAsBytes(base64Decode(json["dimg"]));
       }
       d =  Disease(
-        did: json["did"],
         dname: json["dname"],
         jsonId: json["jsonId"],
         ddescription: json["ddescription"],
@@ -386,7 +373,6 @@ class Disease extends DbObject {
 
   @override
   Map<String, dynamic> toJson() => {
-    "did": did,
     "dname": dname,
     "jsonId": jsonId,
     "ddescription": ddescription,

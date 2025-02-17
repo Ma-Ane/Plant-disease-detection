@@ -13,31 +13,35 @@ class SignIn extends StatefulWidget{
 
 class _SignIn extends State<SignIn> with TickerProviderStateMixin<SignIn>{
 
-
   late TextEditingController emailController;
   late TextEditingController passwordController;
   late AnimationController progressController;
   bool signInReq = false;
 
-  Future<Account> _handleSignIn() async{
-    if(MongoDatabase.isConnected == false){
-      throw "Could not connect to database.";
-    }
-    else if(MongoDatabase.dbError != null){
-      throw MongoDatabase.dbError!;
-    }
+  void _handleSignInAndPush() async{
     try{
-      Account userAcc = await Account.retreiveAccountep(emailController.text,passwordController.text);
-      if(userAcc.isnull){
+      if(MongoDatabase.isConnected == false){
+        throw "Could not connect to database.";
+      }
+      else if(MongoDatabase.dbError != null){
+        throw MongoDatabase.dbError!;
+      }
+      Account foo = await Account.retreiveAccountep(emailController.text,passwordController.text);
+      if(foo.isnull) {
         throw "Could not retrieve the specified account.";
       }
       else{
-        return userAcc;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+        Provider.of<OnDeviceStorage>(context, listen: false).userAcc = foo;
+        Navigator.of(context).pushReplacementNamed('/nav');
+        });
       }
+      setState(() => signInReq = false);
     }catch(e){
+      setState(() => signInReq = false);
       rethrow;
     }
-}
+  }
 
   @override
   void initState() {
@@ -71,44 +75,20 @@ class _SignIn extends State<SignIn> with TickerProviderStateMixin<SignIn>{
 
             Text("  Email", style: theme.textTheme.titleLarge),
 
-            designedTextController(context, "Email", "example@123.com", emailController),
+            DesignedTextController(hintText:  "example@123.com", controller:  emailController),
 
             const SizedBox(height: 20),
 
             Text("  Password", style: theme.textTheme.titleLarge),
 
-            designedTextController(context, "Password", "****", passwordController),
-
-            //if button below is pressed to sign in, display progress indicator while processing, go to Home page when completed, and display an error message if encountered
-            if(signInReq) FutureBuilder(future: _handleSignIn(), builder: (BuildContext context, AsyncSnapshot<Account> snapshot ){
-              Widget child = const SizedBox();
-              if(snapshot.hasData){
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  Provider.of<OnDeviceStorage>(context).userAcc = snapshot.data!;
-                  Navigator.of(context).pushReplacementNamed('/nav', arguments: snapshot.data);
-                  setState(() => signInReq = false);
-                });
-              }
-              else if(snapshot.hasError){
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  displayError(context, snapshot.error!);
-                  setState(() {
-                    signInReq = false;
-                  });
-                });
-              }
-              else{
-                child = const CircularProgressIndicator();
-              }
-              return child;
-            }),
+            DesignedTextController(hintText: "****", controller:  passwordController),
 
             const SizedBox(height: 20),
 
             Align(
               child: designedButton(context, "Sign In", (){
-                setState(() =>signInReq = true);
-                _handleSignIn();
+                setState(() => signInReq = true);
+                _handleSignInAndPush();
               }),
             ),
           ],

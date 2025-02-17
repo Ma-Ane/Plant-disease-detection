@@ -9,9 +9,6 @@ class Privacy extends StatelessWidget {
     return const Scaffold();
   }
 }
-
-
-
 class Settings extends StatefulWidget {
   const Settings({super.key});
 

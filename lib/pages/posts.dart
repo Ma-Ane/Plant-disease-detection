@@ -51,18 +51,6 @@ class _PostsState extends State<Posts>{
     }
   }
 
-  Widget _widgetNamePic(Account a, TextStyle style) {
-    return Row(
-      children: [
-        ClipOval(child: a.profileImage),
-
-        const SizedBox(width: 15),
-
-        Text(a.userName, style: style),
-      ],
-    );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -90,15 +78,15 @@ class _PostsState extends State<Posts>{
         children: [
           const SizedBox(height: 20),
 
-          Consumer<OnDeviceStorage>(builder: (context, userFile, _) => widgetNamePic(context, userFile.userAcc)),
+          Consumer<OnDeviceStorage>(builder: (context, userFile, _) => homeWidgets(context: context, name: userFile.userAcc.userName, pic: userFile.userAcc.profileImage)),
 
           const SizedBox(height: 20),
 
-          Text("Enter a Title for your post: ", style: theme.textTheme.labelLarge),
+          Text("Enter a Title for your post: ", style: theme.textTheme.titleMedium),
 
           const SizedBox(height: 20),
 
-          designedTextController(context, "Title", "", titleController),
+          DesignedTextController(hintText:  "", controller:  titleController),
 
           const SizedBox(height: 20),
 
@@ -111,7 +99,6 @@ class _PostsState extends State<Posts>{
             children: [
               ElevatedButton(
                 onPressed: _cameraOption,
-                //color: const Color.fromARGB(255, 63, 155, 104),
                 child: const Icon(Icons.camera_alt, size: 100),
               ),
 
@@ -125,11 +112,13 @@ class _PostsState extends State<Posts>{
             ],
           ),
 
-          Text("Enter a description about your post: ", style: theme.textTheme.labelLarge),
+          const SizedBox(height: 20),
+
+          Text("Enter a description about your post: ", style: theme.textTheme.titleMedium),
 
           const SizedBox(height: 20),
 
-          designedTextController(context, "description", "", descriptionController),
+          DesignedTextController(hintText: "", controller:  descriptionController),
 
           designedButton(context, "Post", (){
             _handlePost(Provider.of<OnDeviceStorage>(context).userAcc);

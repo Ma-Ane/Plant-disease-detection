@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:my_flutter_app/MongoDb/mongo_work.dart';
 import 'package:my_flutter_app/TFlite/tf_work.dart';
@@ -94,6 +95,7 @@ class _Search extends State<Search> with TickerProviderStateMixin<Search>{
     }
   }
 
+
   @override
   Widget build(BuildContext context){
     ThemeData theme = Theme.of(context);
@@ -101,11 +103,14 @@ class _Search extends State<Search> with TickerProviderStateMixin<Search>{
     return Scaffold(
       appBar: AppBar(
         title: const Text("Detection Page"),
+        automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+
+            const SizedBox(height: 20),
 
             if(detectRequested) FutureBuilder<Disease>(future: _handleSearch(), builder: (BuildContext context, AsyncSnapshot<Disease> snapshot){
               List<Widget> snapshotWidgets =[];

@@ -26,21 +26,24 @@ class _RegisterState extends State<Register>{
   late TextEditingController emailController;
   late TextEditingController passwordController;
 
-  Future<Account> _handleRegister()async{
-    if(MongoDatabase.isConnected == false) {
-      throw "Could not connect to database.";
-    }
-    else if(MongoDatabase.dbError != null){
-      throw MongoDatabase.dbError!;
-    }
+  void _handleRegAndNavigate() async{
     try{
-      Account userAcc = await Account.retreiveAccountep(emailController.text,passwordController.text);
-      if(userAcc.isnull){
+      if(MongoDatabase.isConnected == false) {
+        throw "Could not connect to database.";
+      }
+      else if(MongoDatabase.dbError != null){
+        throw MongoDatabase.dbError!;
+      }
+      Account foo = await Account.retreiveAccountep(emailController.text,passwordController.text);
+      if(foo.isnull){
         await Account.insertAccount(firstNameController.text, middleNameController.text, lastNameController.text, emailController.text, passwordController.text, image);
-        userAcc = await Account.retreiveAccountep(emailController.text,passwordController.text);
+        foo = await Account.retreiveAccountep(emailController.text,passwordController.text);
 
-        if(!userAcc.isnull){
-          return userAcc;
+        if(!foo.isnull){
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+          Provider.of<OnDeviceStorage>(context, listen: false).userAcc = foo;
+          Navigator.of(context).pushReplacementNamed('/nav');
+          });
         }
         else{
           throw "Could not verify insertion of details.";
@@ -50,9 +53,14 @@ class _RegisterState extends State<Register>{
       else{
         throw "This Account Already exists";
       }
+
+      setState(() => regReq = false);
+
     }catch(e){
+      setState(() => regReq = false);
       rethrow;
     }
+
   }
 
   Future<void> _galleryOption() async {
@@ -74,6 +82,8 @@ class _RegisterState extends State<Register>{
       });
     }
   }
+
+
 
   @override
   void initState(){
@@ -105,38 +115,38 @@ class _RegisterState extends State<Register>{
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
 
             const SizedBox(height: 20),
 
             Text("  First Name (Optional)", style: theme.textTheme.titleLarge),
 
-            designedTextController(context, "First Name", "John", firstNameController),
+            DesignedTextController(hintText: "John", controller:  firstNameController),
 
             const SizedBox(height: 20),
 
             Text("  Middle Name (Optional)", style: theme.textTheme.titleLarge),
 
-            designedTextController(context, "Middle Name", "", middleNameController),
+            DesignedTextController(hintText:  "", controller:  middleNameController),
 
             const SizedBox(height: 20),
 
             Text("  Last Name (Optional)", style: theme.textTheme.titleLarge),
 
-            designedTextController(context, "Last Name", "Doe", lastNameController),
+            DesignedTextController(hintText: "Doe", controller:  lastNameController),
 
             const SizedBox(height: 20),
 
             Text("  Email", style: theme.textTheme.titleLarge),
 
-            designedTextController(context, "Email", "example@123.com", emailController),
+            DesignedTextController(hintText: "example@123.com", controller:  emailController),
 
             const SizedBox(height: 20),
 
             Text("  Password", style: theme.textTheme.titleLarge),
 
-            designedTextController(context, "Password", "****", passwordController, true),
+            DesignedTextController(hintText:  "****", controller: passwordController, isPassword: true),
 
             const SizedBox(height: 40),
 
@@ -163,34 +173,14 @@ class _RegisterState extends State<Register>{
               ],
             ),
 
-            //if button below is pressed to register: display progress indicator while processing, go to Home page when completed, and display an error message if encountered
-            if (regReq) FutureBuilder(future: _handleRegister(), builder: (BuildContext context, AsyncSnapshot<Account> snapshot ){
-              Widget child = const SizedBox();
-              if(snapshot.hasData){
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  Provider.of<OnDeviceStorage>(context).userAcc = snapshot.data!;
-                  Navigator.of(context).pushReplacementNamed('/nav', arguments: snapshot.data);
-                  setState(() => regReq = false);
-                });
-              }
-              else if(snapshot.hasError){
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  displayError(context, snapshot.error!);
-                  setState(() {
-                    regReq = false;
-                  });
-                });
-              }
-              else{
-                child = const CircularProgressIndicator();
-              }
-              return child;
-            }),
-
             Align(
               child: designedButton(context, "Register",(){
                 setState(() => regReq = true);
-                _handleRegister();
+                try{
+                  _handleRegAndNavigate();
+                }catch(e){
+                  displayError(context, e);
+                }
               }),
             ),
 

@@ -1,14 +1,17 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:mongo_dart/mongo_dart.dart';
 import 'package:my_flutter_app/MongoDb/mongo_work.dart';
 import 'package:my_flutter_app/pages/app_entry.dart';
+import 'package:my_flutter_app/pages/posts.dart';
 import 'package:my_flutter_app/pages/register.dart';
 import 'package:my_flutter_app/pages/search.dart';
 import 'package:my_flutter_app/pages/sign_in.dart';
 import 'package:my_flutter_app/pages/util/nav.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+export 'package:provider/provider.dart';
 
 class OnDeviceStorage extends ChangeNotifier{
 
@@ -21,9 +24,17 @@ class OnDeviceStorage extends ChangeNotifier{
   bool get exists => file.existsSync();
 
   Account get userAcc{
-    String data = file.readAsStringSync();
-    Account x = accountFromJson(data);
-    return x;
+      if(exists){
+        if(file.lengthSync() != 0){
+          try{
+            String data = file.readAsStringSync();
+            Account x = accountFromJson(data);
+            return x;
+          }catch(_){
+          }
+        }
+      }
+      return Account();
   }
 
   set userAcc(Account x){
@@ -80,7 +91,7 @@ class MyApp extends StatelessWidget {
         '/register' : (context) => const Register(),
         '/search' : (context) => const Search(),
         '/nav': (context) => const Nav(),
-
+        '/posts': (context) => const Posts(),
 
       },
     );

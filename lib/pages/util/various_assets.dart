@@ -49,41 +49,84 @@ Widget designedButton(BuildContext context, String text, VoidCallback onPressed)
   );
 }
 
-Widget designedTextController(BuildContext context, String labelText, String hintText, TextEditingController controller, [bool isPassword = false]){
-  ThemeData theme = Theme.of(context);
-  return Padding(
-    padding: const EdgeInsets.only(left: 10, right: 100),
-    child: Container(
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(10.0),
-        border: Border.all(color: Colors.grey),
-      ),
-      child: TextField(
-        controller: controller,
-        style: theme.primaryTextTheme.bodyLarge,
-        obscureText: isPassword,
-        decoration: InputDecoration(
-          labelStyle: theme.primaryTextTheme.bodyLarge,
-          labelText: labelText,
-          hintStyle:  theme.primaryTextTheme.bodySmall,
-          hintText: hintText,
-          suffixIcon: isPassword ? const Icon(Icons.visibility_off) : null,
-        )
-      )
-    ),
-  );
+class DesignedTextController extends StatefulWidget{
+  final String hintText;
+  final TextEditingController controller;
+  final bool isPassword;
+
+  const DesignedTextController({super.key, required this.hintText, required this.controller, this.isPassword = false});
+
+  @override
+  State<DesignedTextController> createState() => _DesignedTextControllerState();
 }
 
-Widget widgetNamePic(BuildContext context, Account a) {
-  TextStyle style = Theme.of(context).primaryTextTheme.bodyLarge!;
-  return Row(
-    children: [
-      ClipOval(child: a.profileImage),
+class _DesignedTextControllerState extends State<DesignedTextController>{
+  late bool obscure;
 
-      const SizedBox(width: 15),
+  @override
+  void initState() {
+    super.initState();
+    obscure = widget.isPassword;
+  }
 
-      Text(a.userName, style: style),
-    ],
+  @override
+  Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.75,
+      child: TextField(
+        controller: widget.controller,
+        style: theme.primaryTextTheme.bodyLarge,
+        obscureText: obscure,
+        decoration: InputDecoration(
+          hintStyle:  theme.primaryTextTheme.titleMedium,
+          hintText: widget.hintText,
+          suffixIcon: widget.isPassword ?  GestureDetector(onTap:() => setState(() => obscure = !obscure),
+              child: const Icon(Icons.visibility_off, color: Colors.white)
+          ):  null,
+        )
+      ),
+    );
+  }
+}
+
+void foo(){}
+
+Widget homeWidgets({required BuildContext context, required String name, required Widget pic, String? data, Widget? extra}){
+  TextTheme textTheme = Theme.of(context).textTheme;
+  return Container(
+    decoration: BoxDecoration(
+      color: const Color(0xff3f9b68),
+      borderRadius: BorderRadius.circular(20),
+    ),
+    padding: const EdgeInsets.all(10),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            SizedBox(height: 40,child: ClipOval(child: pic)),
+
+            const SizedBox(width: 15),
+
+            Text(name, style: textTheme.titleLarge),
+          ],
+        ),
+
+        const SizedBox(height: 10,),
+
+        Row(
+          children: [
+            if(extra != null) extra,
+
+            const SizedBox(width: 15),
+
+            if(data!= null) Text(data, style: textTheme.bodyLarge),
+          ],
+        ),
+
+      ],
+    ),
   );
+
 }

@@ -32,16 +32,15 @@ class _ProfilePageState extends State<ProfilePage> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             color: const Color.fromARGB(255, 63, 155, 104),
-          ),      
-          height: screenHeight * 0.06,
-          width: double.infinity,
+          ),
+          padding: const EdgeInsets.all(20),
           child: Row(
             children: [
-              SizedBox(width: screenWidth * 0.025),
+              const SizedBox(height: 20),
         
-              Icon(icon, size: screenHeight * 0.04,),
+              Icon(icon, size: 40,),
         
-              SizedBox(width: screenWidth * 0.025),
+              const SizedBox(width: 15),
         
               Text(name,
                 style: const TextStyle(
@@ -60,7 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
     //
     // Image userPic = Image(image: Account.userAcc.pfp !=null?
     //   FileImage(Account.userAcc.pfp!):
-    //   const AssetImage("images/blankPfp.jpg")
+    //   const AssetImage("images/blank.jpg")
     // );
     //
     // String userName = "${Account.userAcc.firstname} ${Account.userAcc.middlename} ${Account.userAcc.lastname}";

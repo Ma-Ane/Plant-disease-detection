@@ -1,9 +1,8 @@
 
 import 'package:flutter/material.dart';
-import 'package:my_flutter_app/MongoDb/mongo_work.dart';
-import 'package:my_flutter_app/pages/home.dart';
-import 'package:my_flutter_app/pages/profile_page.dart';
-import 'package:my_flutter_app/pages/search.dart';
+import 'package:Detector/pages/home.dart';
+import 'package:Detector/pages/profile.dart';
+import 'package:Detector/pages/search.dart';
 
 class Nav extends StatefulWidget {
   const Nav({super.key});
@@ -31,7 +30,7 @@ class _NavState extends State<Nav>{
       body: [
         const Search(),
         const Home(),
-        const ProfilePage(),
+        const Profile(),
       ][currentIndex],
     );
   }

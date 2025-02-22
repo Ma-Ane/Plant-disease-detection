@@ -3,17 +3,16 @@ import 'package:image/image.dart' as img;
 import 'dart:io';
 
 class TfWork {
-  static Map<String,dynamic> modelMap= {
-    "efficientNetB3": "models/efficient_b3.tflite"
-  };
 
-  static Future<int> getPredictions(File userPic, int imageTargetDimension, int outputDimension, String model) async{
+  static List<({String path, String modelName, int imgRes})> modelRecords= [
+    (path: "models/efficientNetB0.tflite", modelName: "efficientNetB0", imgRes: 224),
+    (path: "models/efficientNetB1.tflite", modelName: "efficientNetB1", imgRes: 240),
+    (path: "models/resNet.tflite", modelName: "resNet", imgRes: 224),
+  ];
 
-    if (modelMap[model] == null) {
-      throw Exception('Could not find required model.');
-    }
+  ///returns a [Future] with a [List] of Records in the format: modelName, index, confidence
 
-    final interpreter = await Interpreter.fromAsset(modelMap[model]);
+  static Future<List<({String modelName, int index, double confidence})>> getPredictions(File userPic) async{
 
     final imageBytes = await userPic.readAsBytes();
 
@@ -22,32 +21,46 @@ class TfWork {
       throw Exception('Could not decode the image.');
     }
 
-    final img.Image resizedImage = img.copyResize(image, width: imageTargetDimension, height: imageTargetDimension);
+    List<({String modelName, int index, double confidence})> y = [];
 
-    var input = [List.generate(imageTargetDimension, (y) {
-      return List.generate(imageTargetDimension, (x) {
-        var pixel = resizedImage.getPixel(x, y);
-        return [
-          pixel.r,
-          pixel.g,
-          pixel.b
-        ];
-      });
-    })];
+    for(var x in modelRecords) {
+      img.Image resizedImage = img.copyResize(image, width: x.imgRes, height: x.imgRes);
 
-    var output = [List.filled(outputDimension, 0.0)];
-    interpreter.run(input,output);
+      var input = [List.generate(x.imgRes, (y) {
+        return List.generate(x.imgRes, (x) {
+          var pixel = resizedImage.getPixel(x, y);
+          return [
+            pixel.r,
+            pixel.g,
+            pixel.b
+          ];
+        });
+      })];
 
-    var index = 0;
-    var maxTemp = output[0][0];
-    int i = 0;
+      List<List<double>> output = [List.filled(34, 0.0)];
 
-    for (var x in output[0]){
-      x>maxTemp?index=i:();
-      i++;
+      Interpreter interpreter = await Interpreter.fromAsset(x.path);
+      interpreter.allocateTensors();
+      interpreter.run(input, output);
+      interpreter.close();
+
+      int index = 0;
+      double maxTemp = output[0][0];
+      int i = 0;
+
+      for (var x in output[0]) {
+        if (x > maxTemp) {
+          maxTemp = x;
+          index = i;
+        }
+        i++;
+      }
+      
+      y.add((modelName: x.modelName, index: index, confidence: maxTemp));
+      
     }
 
-    return index;
+    return y;
   }
 
 }

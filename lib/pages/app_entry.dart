@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_flutter_app/main.dart';
-import 'package:my_flutter_app/pages/util/various_assets.dart';
+import 'package:Detector/main.dart';
+import 'package:Detector/pages/util/various_assets.dart';
 
 class AppEntry extends StatelessWidget {
   const AppEntry({super.key});
@@ -16,9 +16,7 @@ class AppEntry extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
 
-          Image.asset('images/logo.jpg'),
-
-          const SizedBox(height: 50),
+          Image.asset('images/logo.png', height: 200,),
 
           Align(
             alignment: Alignment.center,

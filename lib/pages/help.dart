@@ -1,124 +1,65 @@
-import 'package:flutter/material.dart' ;
 
-class Help extends StatelessWidget {
+import 'package:flutter/material.dart';
+
+class Help extends StatelessWidget{
   const Help({super.key});
+
+  static final Map<int, String> _diseaseNameMap = {
+    0: 'Healthy Apple',
+    1: 'Rotten Apple',
+    2: 'Apple with Rust',
+    3: 'Apple with Scab',
+    4: 'Healthy Corn',
+    5: 'Corn Leaf with Blight',
+    6: 'Corn Leaf with Gray Spot',
+    7: 'Corn Leaf with Green Spot',
+    8: 'Corn Leaf with Rust',
+    9: 'Healthy Coffee',
+    10: 'Coffee with Rust',
+    11: 'Bell pepper with bacterial Spot',
+    12: 'Healthy Bell pepper',
+    13: 'Potato with Early Blight',
+    14: 'Healthy Potato',
+    15: 'Potato with Late Blight',
+    16: 'Healthy Rice',
+    17: 'Rice Leaf with Blast',
+    18: 'Rice Leaf with Blight',
+    19: 'Rice Leaf with Brown Spot',
+    20: 'Healthy Strawberry',
+    21: 'Scorched Strawberry Leaf',
+    22: 'Tea Algal Sot',
+    23: 'Tea with Brown Blight',
+    24: 'Healthy Tea',
+    25: 'Tea with Red Leaf Spot',
+    26: 'Tomato with Bacterial Spot',
+    27: 'Tomato with Early Blight',
+    28: 'Healthy Tomato',
+    29: 'Tomato with Late Blight',
+    30: 'Tomato with Leaf Mold',
+    31: 'Tomato with Mosiac Virus',
+    32: 'Tomato with Septoria Leaf Spot',
+    33: 'Tomato with Target Spot'
+  };
+
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height ;
-    //double screenWidth = MediaQuery.of(context).size.width ;
-
-    // returns the name of class along with some padding
-    Widget returnClass (String name) {
-      return Column(
-        children: [
-          SizedBox(height: screenHeight * 0.01),
-
-          Text(name,
-            style: const TextStyle(
-              fontSize: 15, 
-              color: Color.fromARGB(255, 173, 204, 217),
-            )
-          ),
-        ],
-      );
+    List<Widget> children = [];
+    for(var x in _diseaseNameMap.entries){
+      children.add(Text("${x.value}\n"));
     }
-
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 52, 66, 80),
-      appBar: AppBar(
-        title: const Text("Help"),
-      ),
-
-      // yo default text color wihte ko lagi but not workingg
-      body: SingleChildScrollView(
-        child: Theme(
-          data: Theme.of(context).copyWith(
-            textTheme: Theme.of(context).textTheme.apply(
-              bodyColor: const Color.fromARGB(255, 173, 204, 217),
-              displayColor: Colors.white,
-            ),
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(screenHeight * 0.02),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text("This app is based on a CNN model, especially Efficient B1 version, that is known for its propert to detect patterns in the image data. This app provides and accuracy of 98.0%, meaning it can correctrly classify 98 diseases from 100 input images.",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Color.fromARGB(255, 173, 204, 217),
-                  )
-                ),
-            
-                SizedBox(height: screenHeight * 0.02),
-            
-                const Text("Here are some of the classes that the app can classify:",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                    //color: Color.fromARGB(255, 173, 204, 217),
-                  )
-                ),
-            
-                returnClass("1.  Apple Apple scab"),
-                returnClass("2.  Apple Black rot"),
-                returnClass("3.  Apple Cedar apple rust"),
-                returnClass("4.  Apple healthy"),
-                returnClass("5.  Bacterial leaf blight in rice leaf"),
-                returnClass("6.  Blight in corn leaf"),
-                returnClass("7.  Blueberry healthy"),
-                returnClass("8.  Brown spot in rice leaf"),
-                returnClass("9.  Cercospora leaf spot"),
-                returnClass("10.  Cherry (including sour) Powdery mildew"),
-                returnClass("11.  Cherry (including sour) healthy"),
-                returnClass("12.  Common Rust in corn Leaf"),
-                returnClass("13.  Corn (maize) healthy"),
-                returnClass("14.  Garlic"),
-                returnClass("15.  Grape Black rot"),
-                returnClass("16.  Grape Esca Black Measles"),
-                returnClass("17.  Grape Leaf blight Isariopsis Leaf Spot"),
-                returnClass("18.  Grape healthy"),
-                returnClass("19.  Gray Leaf Spot in corn Leaf"),
-                returnClass("20.  Leaf smut in rice leaf"),
-                returnClass("21.  Orange Haunglongbing Citrus greening"),
-                returnClass("22.  Peach healthy"),
-                returnClass("23.  Pepper bell Bacterial spot"),
-                returnClass("24.  Pepper bell Healthy"),
-                returnClass("25.  Potato Early blight"),
-                returnClass("26.  Potato Late blight"),
-                returnClass("27.  Potato healthy"),
-                returnClass("28.  Raspberry healthy"),
-                returnClass("29.  Sogatella rice"),
-                returnClass("30.  Soyabean healthy"),
-                returnClass("31.  Strawberry healthy"),
-                returnClass("32.  Tomato Bacterial spot"),
-                returnClass("33.  Tomato Early blight"),
-                returnClass("34.  Tomato Late blight"),
-                returnClass("35.  Tomato Leaf Mold"),
-                returnClass("36.  Tomato Septoria leaf spot"),
-                returnClass("37.  Tomato Spider mites Two spotted spider mite"),
-                returnClass("38.  Tomato Target Spot"),
-                returnClass("39.  Tomato Tomato mosaic virus"),
-                returnClass("40.  Tomato healthy"),
-                returnClass("41.  Algal leaf in tea"),
-                returnClass("42.  Anthracnose in tea"),
-                returnClass("43.  Bird eye spot in rea"),
-                returnClass("44.  Brown blight in tea"),
-                returnClass("45.  Cabbage looper"),
-                returnClass("46.  Corn crop"),
-                returnClass("47.  Ginger"),
-                returnClass("48.  Healthy tea leaf"),
-                returnClass("49.  Lemon canker"),
-                returnClass("50.  Onion"),
-                returnClass("51.  Potassium deficiency in plant"),
-                returnClass("52.  Potato crop"),
-                returnClass("53.  Potato hollow heart"),
-                returnClass("54.  Red leaf spot in tea"),
-                returnClass("55.  Tomato canker"),
-                returnClass("56.  Strawberry leaf scorch"),
-              ],
-            ),
+      appBar: AppBar(title:const Text("Help"),),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text("This application detects diseases in plants using several AI models (efficientNet and ResNet)\n"
+                  "The diseases this app can detect include:\n"),
+              ...children
+            ],
           ),
         ),
       ),

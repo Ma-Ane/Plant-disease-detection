@@ -2,10 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:my_flutter_app/main.dart';
-import 'package:my_flutter_app/pages/util/various_assets.dart';
-import 'package:my_flutter_app/MongoDb/mongo_work.dart';
-import 'package:provider/provider.dart';
+import 'package:Detector/main.dart';
+import 'package:Detector/pages/util/various_assets.dart';
+import 'package:Detector/MongoDb/mongo_work.dart';
 
 class Posts extends StatefulWidget{
   const Posts({super.key});
@@ -42,10 +41,9 @@ class _PostsState extends State<Posts>{
     }
   }
 
-  Future<bool> _handlePost(Account a) async{
+  Future<void> _handlePost(Account a) async{
     try{
       await Post.insertPost(a.accountId, descriptionController.text,titleController.text ,image);
-      return true;
     }catch(e){
       rethrow;
     }
@@ -71,81 +69,72 @@ class _PostsState extends State<Posts>{
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Post")
+        title: const Text("Make a Post")
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-
-          Consumer<OnDeviceStorage>(builder: (context, userFile, _) => homeWidgets(context: context, name: userFile.userAcc.userName, pic: userFile.userAcc.profileImage)),
-
-          const SizedBox(height: 20),
-
-          Text("Enter a Title for your post: ", style: theme.textTheme.titleMedium),
-
-          const SizedBox(height: 20),
-
-          DesignedTextController(hintText:  "", controller:  titleController),
-
-          const SizedBox(height: 20),
-
-          if(image != null) Image.file(image!,width: 300),
-
-          const SizedBox(height: 20),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: _cameraOption,
-                child: const Icon(Icons.camera_alt, size: 100),
-              ),
-
-              const SizedBox(width: 40),
-
-              ElevatedButton(
-                onPressed: _galleryOption,
-                //color: const Color.fromARGB(255, 63, 155, 104),
-                child: const Icon(Icons.image, size: 100),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 20),
-
-          Text("Enter a description about your post: ", style: theme.textTheme.titleMedium),
-
-          const SizedBox(height: 20),
-
-          DesignedTextController(hintText: "", controller:  descriptionController),
-
-          designedButton(context, "Post", (){
-            _handlePost(Provider.of<OnDeviceStorage>(context).userAcc);
-            setState(() => postReq = true);
-          }),
-
-          if(postReq) FutureBuilder(future: _handlePost(Provider.of<OnDeviceStorage>(context).userAcc), builder: (BuildContext context, AsyncSnapshot<void> snapshot){
-            Widget child = const SizedBox();
-            if(snapshot.hasData){
-              WidgetsBinding.instance.addPostFrameCallback((_){
-                displayError(context, "Post made successfully");
-                setState(() => postReq = false);
-              });
-            }
-            else if(snapshot.hasError){
-              WidgetsBinding.instance.addPostFrameCallback((_){
-                displayError(context, "Posting Error", snapshot.error);
-                setState(() => postReq = false);
-              });
-            }
-            else{
-              child = const CircularProgressIndicator();
-            }
-            return child;
-          })
-
-        ]
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+        
+            Consumer<OnDeviceStorage>(builder: (context, userFile, _) =>
+                TextAndWidget(name: userFile.userAcc.userName, pic: userFile.userAcc.profileImage)),
+        
+            const SizedBox(height: 20),
+        
+            Text("Enter a Title for your post: ", style: theme.textTheme.titleMedium),
+        
+            const SizedBox(height: 20),
+        
+            DesignedTextController(hintText:  "", controller:  titleController),
+        
+            const SizedBox(height: 20),
+        
+            if(image != null) Image.file(image!,width: 300),
+        
+            const SizedBox(height: 20),
+        
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: _cameraOption,
+                  child: const Icon(Icons.camera_alt, size: 100),
+                ),
+        
+                const SizedBox(width: 40),
+        
+                ElevatedButton(
+                  onPressed: _galleryOption,
+                  //color: const Color.fromARGB(255, 63, 155, 104),
+                  child: const Icon(Icons.image, size: 100),
+                ),
+              ],
+            ),
+        
+            const SizedBox(height: 20),
+        
+            Text("Enter a description about your post: ", style: theme.textTheme.titleMedium),
+        
+            const SizedBox(height: 20),
+        
+            DesignedTextController(hintText: "", controller:  descriptionController),
+        
+            designedButton(context, "Post", (){
+              try{
+                _handlePost(Provider.of<OnDeviceStorage>(context).userAcc);
+              }catch(e){
+                displayError(context, e);
+              }
+              displayError(context, "Post made!");
+        
+              setState(() => postReq = true);
+        
+            }),
+        
+        
+          ]
+        ),
       ),
     );
   }

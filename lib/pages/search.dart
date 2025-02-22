@@ -1,10 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:my_flutter_app/MongoDb/mongo_work.dart';
-import 'package:my_flutter_app/TFlite/tf_work.dart';
-import 'package:my_flutter_app/pages/util/various_assets.dart';
+import 'package:Detector/MongoDb/mongo_work.dart';
+import 'package:Detector/TFlite/tf_work.dart';
+import 'package:Detector/pages/util/various_assets.dart';
 
 class Search extends StatefulWidget{
   const Search({super.key});
@@ -13,12 +12,15 @@ class Search extends StatefulWidget{
   State<Search> createState() => _Search();
 }
 
-class _Search extends State<Search> with TickerProviderStateMixin<Search>{
+class _Search extends State<Search>{
 
-  File? image;
-  bool detectRequested = false;
+  File? _image;
+  bool _detectRequested = false;
+  final ImagePicker _picker = ImagePicker();
+  OverlayEntry? _overlayEntry;
+  late AnimationController controller;
 
-  Map<int, String> diseaseNameMap = {
+  final Map<int, String> _diseaseNameMap = {
     0: 'Healthy Apple',
     1: 'Rotten Apple',
     2: 'Apple with Rust',
@@ -30,8 +32,8 @@ class _Search extends State<Search> with TickerProviderStateMixin<Search>{
     8: 'Corn Leaf with Rust',
     9: 'Healthy Coffee',
     10: 'Coffee with Rust',
-    11: 'Pepperbell with bacterial Spot',
-    12: 'Healthy Pepperbell',
+    11: 'Bell pepper with bacterial Spot',
+    12: 'Healthy Bell pepper',
     13: 'Potato with Early Blight',
     14: 'Healthy Potato',
     15: 'Potato with Late Blight',
@@ -39,62 +41,108 @@ class _Search extends State<Search> with TickerProviderStateMixin<Search>{
     17: 'Rice Leaf with Blast',
     18: 'Rice Leaf with Blight',
     19: 'Rice Leaf with Brown Spot',
-    20: 'Rice Leaf Smut',
-    21: 'Rick Neck Blast',
-    22: 'Healthy Strawberry',
-    23: 'Scorched Strawberry Leaf',
-    24: 'Tea Algal Sot',
-    25: 'Tea with Brown Blight',
-    26: 'Healthy Tea',
-    27: 'Tea with Red Leaf Spot',
-    28: 'Tomato with Bacterial Spot',
-    29: 'Tomato with Early Blight',
-    30: 'Healthy Tomato',
-    31: 'Tomato with Late Blight',
-    32: 'Tomato with Leaf Mold',
-    33: 'Tomato with Mosiac Virus',
-    34: 'Tomato with Septoria Leaf Spot',
-    35: 'Tomato with Target Spot'
+    20: 'Healthy Strawberry',
+    21: 'Scorched Strawberry Leaf',
+    22: 'Tea Algal Sot',
+    23: 'Tea with Brown Blight',
+    24: 'Healthy Tea',
+    25: 'Tea with Red Leaf Spot',
+    26: 'Tomato with Bacterial Spot',
+    27: 'Tomato with Early Blight',
+    28: 'Healthy Tomato',
+    29: 'Tomato with Late Blight',
+    30: 'Tomato with Leaf Mold',
+    31: 'Tomato with Mosiac Virus',
+    32: 'Tomato with Septoria Leaf Spot',
+    33: 'Tomato with Target Spot'
   };
 
+  void _disposeOverlay() {
+    _overlayEntry!.remove();
+    _overlayEntry!.dispose();
+    _overlayEntry = null;
+    setState(() {});
+  }
+
+  void _showInfo(List<({String modelName, Disease disease, double confidence})> info){
+
+    List<Widget> children = [];
+    for(var x in info) {
+      children.add(TextAndWidget(
+        name: "${x.modelName} found:",
+        pic: x.disease.diseaseImage,
+        data: "${x.disease.dname}.\nWith a confidence of ${(x.confidence*100).toString().substring(0,4)}%",
+      ),);
+    }
+
+    _overlayEntry = OverlayEntry(builder: (BuildContext context){
+      return SafeArea(
+        child: Container(
+          color: Theme.of(context).colorScheme.surface.withAlpha(127),
+          child: Column(
+              children: [
+                ...children,
+                designedButton(context, "Dismiss", _disposeOverlay)
+              ]
+          ),
+        ),
+      );
+    });
+
+    Overlay.of(context).insert(_overlayEntry!);
+
+  }
+
   Future<void> _galleryOption() async {
-    final ImagePicker picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery) ;
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery) ;
     if (pickedFile != null) {
       setState(() {
-        image = File(pickedFile.path) ;
-        detectRequested = false;
+        _image = File(pickedFile.path) ;
+        _detectRequested = false;
       });
     }
   }
 
   Future<void> _cameraOption() async{
-    final ImagePicker picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
     if(pickedFile != null){
       setState(() {
-        image = File(pickedFile.path);
-        detectRequested = false;
+        _image = File(pickedFile.path);
+        _detectRequested = false;
       });
     }
   }
 
-  Future<Disease> _handleSearch() async{
-    Disease detectedDisease = Disease();
+  Future<List<({String modelName, Disease disease, double confidence})>> _handleSearch() async{
     try{
-      int index = await TfWork.getPredictions(image!, 300, 36, "efficientNetB3");
-      if(MongoDatabase.dbError != null && MongoDatabase.isConnected){
-        detectedDisease = await Disease.retreiveDisease(index);
+      if(_image == null)  throw "Select an image first";
+
+      var results = await TfWork.getPredictions(_image!);
+      List<({String modelName, Disease disease, double confidence})> ret = [];
+      for(var x in results) {
+        try{
+          Disease detectedDisease = await Disease.retreiveDisease(x.index);
+          if(!detectedDisease.isnull) {
+            ret.add(
+                (modelName: x.modelName, disease: detectedDisease, confidence: x
+                    .confidence));
+          }
+          else{
+            ret.add((modelName: x.modelName, disease: Disease(dname: _diseaseNameMap[x.index], jsonId: x.index), confidence: x.confidence));
+          }
+        }
+        catch(e){
+          ret.add((modelName: x.modelName, disease: Disease(dname: _diseaseNameMap[x.index], jsonId: x.index), confidence: x.confidence));
+        }
+
       }
-      if(detectedDisease.isnull){
-        return Disease(dname: diseaseNameMap[index], jsonId: index, isnull: false);
-      }
-      return detectedDisease;
+      ret.sort( (a,b) => b.confidence.compareTo(a.confidence) );
+      //}
+      return ret;
     }catch(e){
       rethrow;
     }
   }
-
 
   @override
   Widget build(BuildContext context){
@@ -106,76 +154,114 @@ class _Search extends State<Search> with TickerProviderStateMixin<Search>{
         automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+        child: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+          
+              const SizedBox(height: 20),
+          
+              if(_detectRequested) FutureBuilder<List<({String modelName, Disease disease, double confidence})>>
+                  (future: _handleSearch(),
+                  builder: (BuildContext context, AsyncSnapshot<List<({String modelName, Disease disease, double confidence})>> snapshot){
 
-            const SizedBox(height: 20),
-
-            if(detectRequested) FutureBuilder<Disease>(future: _handleSearch(), builder: (BuildContext context, AsyncSnapshot<Disease> snapshot){
-              List<Widget> snapshotWidgets =[];
-              if(snapshot.hasData){
-                if(snapshot.data != null) {
-                  snapshotWidgets.add(Image.file(image!,height: 300, fit: BoxFit.fitHeight,));
+                List<Widget> snapshotWidgets =[];
+                if(snapshot.hasData){
+                  snapshotWidgets.add(Image.file(_image!,width: 300));
                   snapshotWidgets.add(const SizedBox(height: 20));
+                  
+                  snapshotWidgets.add(TextAndWidget(
+                    name: "Possible Detections Found:",
+                    pic: snapshot.data![0].disease.diseaseImage,
+                    data: snapshot.data![0].disease.dname,
+                    extra: Container(
+                      decoration: const BoxDecoration(
+                          color: Color(0x44ffffff),
+                          shape: BoxShape.circle
+                      ),
+                      child: GestureDetector(
+                          onTap: ()=> _showInfo(snapshot.data!),
+                          child: const Icon(Icons.info, size: 20,)
+                      ),
+                    ),
+                  ));
+                  
+                }
+                else if(snapshot.hasError){
+                  if(_image != null) snapshotWidgets.add(Image.file(_image!,width: 300));
                   snapshotWidgets.add(Text(
-                      "Possible Detection Found", style: theme.textTheme.labelLarge));
-                  snapshotWidgets.add(Text(snapshot.data!.dname??"",
+                      "Detection Error", style: theme.textTheme.labelLarge));
+                  snapshotWidgets.add(Text(snapshot.error.toString(),
                       style: theme.textTheme.bodyMedium));
                 }
                 else{
-                  snapshotWidgets.add(Image.file(image!,width: 300));
-                  snapshotWidgets.add(Text("Detection Error", style: theme.textTheme.labelLarge));
-                  snapshotWidgets.add(Text(
-                      "Please contact the developers. This should not have happened", style: theme.textTheme.bodyMedium));
+                  snapshotWidgets.add(const CircularProgressIndicator());
                 }
-              }
-              else if(snapshot.hasError){
-                snapshotWidgets.add(Image.file(image!,width: 300));
-                snapshotWidgets.add(Text(
-                    "Detection Error", style: theme.textTheme.labelLarge));
-                snapshotWidgets.add(Text(snapshot.error.toString(),
-                    style: theme.textTheme.bodyMedium));
-              }
-              else{
-                snapshotWidgets.add(const CircularProgressIndicator());
-              }
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: snapshotWidgets,
-              );
-            })
-
-            else if (image != null) Image.file(image!,width: 300),
-
-            const SizedBox(height: 20),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: _cameraOption,
-                  //color: const Color.fromARGB(255, 63, 155, 104),
-                  child: const Icon(Icons.camera_alt, size: 100),
-                ),
-
-                const SizedBox(width: 40),
-
-                ElevatedButton(
-                  onPressed: _galleryOption,
-                  //color: const Color.fromARGB(255, 63, 155, 104),
-                  child: const Icon(Icons.image, size: 100),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 20),
-
-            designedButton(context, "Detect", (){setState(() {
-              detectRequested = true;
-            }); _handleSearch();}),
-
-          ],
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: snapshotWidgets,
+                );
+              })
+          
+              else if (_image != null) Image.file(_image!,width: 300),
+          
+              const SizedBox(height: 20),
+          
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: _cameraOption,
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.resolveWith((states){
+                        if(states.contains(WidgetState.pressed)){
+                          return theme.colorScheme.tertiary;
+                        }
+                        return theme.colorScheme.inversePrimary;
+                      }),
+                      foregroundColor:WidgetStateProperty.resolveWith((states){
+                        if(states.contains(WidgetState.pressed)){
+                          return theme.colorScheme.surface;
+                        }
+                        return theme.colorScheme.inverseSurface;
+                      }),
+                    ),
+                    child: const Icon(Icons.camera_alt, size: 100),
+                  ),
+          
+                  const SizedBox(width: 40),
+          
+                  ElevatedButton(
+                    onPressed: _galleryOption,
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.resolveWith((states){
+                        if(states.contains(WidgetState.pressed)){
+                        return theme.colorScheme.tertiary;
+                      }
+                        return theme.colorScheme.inversePrimary;
+                      }),
+                        foregroundColor:WidgetStateProperty.resolveWith((states){
+                        if(states.contains(WidgetState.pressed)){
+                        return theme.colorScheme.surface;
+                      }
+                        return theme.colorScheme.inverseSurface;
+                      }),
+                    ),
+                    child: const Icon(Icons.image, size: 100),
+                  ),
+                ],
+              ),
+          
+              const SizedBox(height: 20),
+          
+              designedButton(context, "Detect", (){setState(() {
+                  _detectRequested = true;
+                });
+                _handleSearch();
+              }),
+          
+            ],
+          ),
         ),
       ),
     );

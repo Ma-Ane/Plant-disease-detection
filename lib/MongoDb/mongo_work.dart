@@ -11,7 +11,7 @@ class MongoDatabase {
   ///Repeatedly try to connect to the MongoAtlas servers.
   ///On error encountered dbError Object is set to the value of the error.
   static Future<void> connect() async{
-    const mongoConnUrl = "mongodb+srv://ishangh64:M6HMC~52pj@cluster0.f1b4s.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+    const mongoConnUrl = "mongodb+srv://ishangh64:M6HMC~52pj@cluster0.f1b4s.mongodb.net/Project?retryWrites=true&w=majority&appName=Cluster0";
     const usrColl= "ProjectData";
     try{
       while(!isConnected){
@@ -29,7 +29,7 @@ class MongoDatabase {
   static Future<void> insertToDb(DbObject data) async{
     try{
       var result = await userCollection.insertOne(data.toJson());
-      if(!result.isSuccess){
+      if(result.isFailure){
         throw "Data insertion error.";
       }
     }catch(e){
@@ -57,6 +57,16 @@ class MongoDatabase {
     }
   }
 
+  static Future<void> replaceOneToDb(dynamic selector, dynamic update) async{
+    try{
+      var result = await userCollection.replaceOne(selector,update);
+      if(result.isFailure){
+        throw "Data modification error";
+      }
+    }catch(e){
+      rethrow;
+    }
+  }
 }
 
 ///An abstract class to represent all database objects
@@ -93,26 +103,30 @@ class Account extends DbObject{
     this.isnull = true
   });
 
-  factory Account.fromJson(Map<String, dynamic>? json) { 
-    Account x =  Account();
-    if(json != null){
-      ///to store as bindata in mongodb
-      File? temp;
-      if(json["pfp"]!=null){
+  factory Account.fromJson(Map<String, dynamic>? json) {
+    if(json == null) return Account();
+    ///to store as bindata in mongodb
+    File? temp;
+    try {
+      if (json["pfp"] != null) {
         temp = File("${Directory.systemTemp.path}/${ObjectId()}");
-        temp.writeAsBytes(base64Decode(json["pfp"]));
+        temp.writeAsBytesSync(base64Decode(json["pfp"]));
       }
-      x = Account(
-      accountId: json["accountId"],
-      firstname: json["firstname"],
-      middlename: json["middlename"],
-      lastname: json["lastname"],
-      email: json["email"],
-      pfp:temp,
-      password: json["password"],
-      isnull: false
-      );
+    }catch(e){
+      temp = null;
     }
+
+    Account x = Account(
+    accountId: json["accountId"],
+    firstname: json["firstname"],
+    middlename: json["middlename"],
+    lastname: json["lastname"],
+    email: json["email"],
+    pfp: temp,
+    password: json["password"],
+    isnull: false
+    );
+
     return x;
   }
 
@@ -125,17 +139,20 @@ class Account extends DbObject{
     "email": email,
     "password": password,
     ///to read from bindata from mongodb
-    "pfp": pfp==null?null:base64Encode((pfp?.readAsBytesSync())!),
+    "pfp": pfp == null ? null : base64Encode(pfp!.readAsBytesSync()),
   };
 
-  String get userName => "${firstname==null?():"$firstname "}${middlename==null?():"$middlename "}${lastname==null?():"$lastname "}";
+  String get userName =>
+      "${firstname??""}${middlename??""}${lastname??""}";
 
-  Widget get profileImage => pfp==null?const Icon(Icons.person,size: 40,):Image.file(pfp!, height: 40,);
+  Widget get profileImage => pfp==null
+      ?const Icon(Icons.person,size: 40,)
+      :Image.file(pfp!, height: 40,);
 
   ///inserts a [Account] with the given information into the database
   static Future<void> insertAccount(String? firstName, String? middleName, String? lastName, String emailAddress, String password, File? img) async{
     Account check = Account.fromJson(await MongoDatabase.getFromDbOne({"email": emailAddress, "password": password}));
-    if(check.isnull == true){
+    if(check.isnull){
       var id_ = ObjectId().toJson();
       final data = Account(accountId: id_, firstname: firstName,middlename: middleName, lastname: lastName, email: emailAddress,password: password, pfp: img);
       try{
@@ -147,6 +164,18 @@ class Account extends DbObject{
     else{
       throw "This account already exists!";
     
+    }
+  }
+
+  static Future<void> modifyAccount(Account a) async{
+    try {
+      if (a.accountId == null) throw "Account doesnt exist";
+      Account check = await retreiveAccountoi(a.accountId!);
+      if (check.isnull) return;
+      await MongoDatabase.replaceOneToDb(
+          where.eq('accountId', a.accountId), a.toJson());
+    }catch(e){
+      rethrow;
     }
   }
 
@@ -171,6 +200,7 @@ class Account extends DbObject{
     }
     return val;
   }
+
 }
 
 Post postFromJson(String str) => Post.fromJson(json.decode(str));
@@ -197,10 +227,10 @@ class Post extends DbObject{
   });
 
   factory Post.fromJson(Map<String, dynamic>? json){
-    Post x = Post();    
-    File? temp;
+    Post x = Post();
 
     if(json != null){
+      File? temp;
       if(json["pimg"]!=null){
         temp = File("${Directory.systemTemp.path}/${ObjectId()}");
         temp.writeAsBytes(base64Decode(json["pimg"]));
@@ -208,8 +238,8 @@ class Post extends DbObject{
       x = Post(
       postId: json["postId"],
       accountId: json["accountId"],
-      pdescription: json["description"],
-      ptitle: json["title"],
+      pdescription: json["pdescription"],
+      ptitle: json["ptitle"],
       pimg: temp,
       isnull: false
       );
@@ -228,6 +258,16 @@ class Post extends DbObject{
     };
     return json;
   }
+
+  Widget? get postImage => pimg==null
+      ? null
+      :Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+          child: Image.file(pimg!),
+        ),
+      );
 
   ///insert a [Post] with the given information into the database
   static Future<void> insertPost(String? accountid, String description, String title, File? image) async{
@@ -340,7 +380,7 @@ class Disease extends DbObject {
 
   @override
   String toString() {
-    return "$dname: $ddescription";
+    return "$dname";
   }
   
   Disease({
@@ -378,6 +418,11 @@ class Disease extends DbObject {
     "ddescription": ddescription,
     "dimg": dimg==null?null:base64Encode((dimg?.readAsBytesSync())!)
   };
+
+
+  Widget? get diseaseImage => dimg==null
+      ? null
+      :Image.file(dimg!, height: 40,);
 
   static Future<Disease> retreiveDisease(int jsonId) async{
     Disease val = Disease();

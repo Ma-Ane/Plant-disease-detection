@@ -1,10 +1,24 @@
 import 'package:flutter/material.dart' ;
+import 'package:Detector/pages/util/various_assets.dart';
 
 class ContactUs extends StatelessWidget {
   const ContactUs({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Contact Us"),
+      ),
+      body: const SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TextAndWidget(name: "Ishan Ghimire", data: "number: 9862108466\nemail: ishangh64@gmail.com")
+          ],
+        )
+      ),
+    );
   }
 }

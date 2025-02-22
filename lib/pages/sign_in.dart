@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart' ;
-import 'package:my_flutter_app/main.dart';
-import 'package:my_flutter_app/pages/util/various_assets.dart';
-import 'package:my_flutter_app/MongoDb/mongo_work.dart';
-import 'package:provider/provider.dart';
+import 'package:Detector/main.dart';
+import 'package:Detector/pages/util/various_assets.dart';
+import 'package:Detector/MongoDb/mongo_work.dart';
 
 class SignIn extends StatefulWidget{
   const SignIn({super.key});

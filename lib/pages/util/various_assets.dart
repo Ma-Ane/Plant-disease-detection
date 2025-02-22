@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_flutter_app/MongoDb/mongo_work.dart';
 
 Future displayError(BuildContext context, Object e, [Object? details]){
   ThemeData theme = Theme.of(context);
@@ -7,7 +6,7 @@ Future displayError(BuildContext context, Object e, [Object? details]){
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title:  Text(e.toString(),style: theme.primaryTextTheme.titleMedium),
+        title:  Text(e.toString(),style: theme.textTheme.titleMedium),
         actions:[
           TextButton(
             onPressed: () {Navigator.of(context).pop() ;},
@@ -21,6 +20,7 @@ Future displayError(BuildContext context, Object e, [Object? details]){
 }
 
 Widget designedButton(BuildContext context, String text, VoidCallback onPressed){
+  ThemeData theme = Theme.of(context);
   return Padding(
     padding: const EdgeInsets.only(left: 10, right: 10, top:20),
     child: SizedBox(
@@ -30,9 +30,9 @@ Widget designedButton(BuildContext context, String text, VoidCallback onPressed)
         style: ButtonStyle(
           backgroundColor: WidgetStateProperty.resolveWith((states){
             if(states.contains(WidgetState.pressed)){
-              return const Color(0x88B4d3b2);
+              return theme.colorScheme.tertiary;
             }
-            return const Color(0xFFB4d3b2);
+            return theme.colorScheme.inversePrimary;
           }),
           foregroundColor:const WidgetStatePropertyAll(Color(0xff000000)),
           shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
@@ -40,11 +40,9 @@ Widget designedButton(BuildContext context, String text, VoidCallback onPressed)
         onPressed: onPressed,
         child: Text(
           text,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),),
+          style: theme.textTheme.titleLarge
         ),
+      ),
     ),
   );
 }
@@ -76,13 +74,13 @@ class _DesignedTextControllerState extends State<DesignedTextController>{
       width: MediaQuery.of(context).size.width * 0.75,
       child: TextField(
         controller: widget.controller,
-        style: theme.primaryTextTheme.bodyLarge,
+        style: theme.textTheme.bodyLarge,
         obscureText: obscure,
         decoration: InputDecoration(
-          hintStyle:  theme.primaryTextTheme.titleMedium,
+          hintStyle:  theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w200),
           hintText: widget.hintText,
           suffixIcon: widget.isPassword ?  GestureDetector(onTap:() => setState(() => obscure = !obscure),
-              child: const Icon(Icons.visibility_off, color: Colors.white)
+              child: const Icon(Icons.visibility_off)
           ):  null,
         )
       ),
@@ -90,43 +88,55 @@ class _DesignedTextControllerState extends State<DesignedTextController>{
   }
 }
 
-void foo(){}
+class TextAndWidget extends StatelessWidget{
+  final String name;
+  final Widget? pic;
+  final String? data;
+  final Widget? extra;
 
-Widget homeWidgets({required BuildContext context, required String name, required Widget pic, String? data, Widget? extra}){
-  TextTheme textTheme = Theme.of(context).textTheme;
-  return Container(
-    decoration: BoxDecoration(
-      color: const Color(0xff3f9b68),
-      borderRadius: BorderRadius.circular(20),
-    ),
-    padding: const EdgeInsets.all(10),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+  const TextAndWidget({super.key, required this.name, this.pic, this.data, this.extra});
+
+  @override
+  Widget build(BuildContext context) {
+    TextTheme textTheme = Theme.of(context).textTheme;
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: colorScheme.inversePrimary,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 40,child: ClipOval(child: pic)),
+            Row(
+              children: [
+                if(pic != null) pic!,
 
-            const SizedBox(width: 15),
+                const SizedBox(width: 15),
 
-            Text(name, style: textTheme.titleLarge),
+                Text(name, style: textTheme.titleLarge),
+              ],
+            ),
+
+            if(extra != null || data != null) const SizedBox(height: 10,),
+
+            Row(
+              children: [
+                if(extra != null) extra!,
+
+                const SizedBox(width: 15),
+
+                if(data!= null) Text(data!, style: textTheme.bodyLarge),
+              ],
+            ),
+
           ],
         ),
-
-        const SizedBox(height: 10,),
-
-        Row(
-          children: [
-            if(extra != null) extra,
-
-            const SizedBox(width: 15),
-
-            if(data!= null) Text(data, style: textTheme.bodyLarge),
-          ],
-        ),
-
-      ],
-    ),
-  );
-
+      ),
+    );
+  }
 }
+

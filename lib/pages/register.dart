@@ -3,10 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:my_flutter_app/main.dart';
-import 'package:my_flutter_app/pages/util/various_assets.dart';
-import 'package:my_flutter_app/MongoDb/mongo_work.dart';
-import 'package:provider/provider.dart';
+import 'package:Detector/main.dart';
+import 'package:Detector/pages/util/various_assets.dart';
+import 'package:Detector/MongoDb/mongo_work.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -113,80 +112,110 @@ class _RegisterState extends State<Register>{
         title: const Text("Register"),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-
-            const SizedBox(height: 20),
-
-            Text("  First Name (Optional)", style: theme.textTheme.titleLarge),
-
-            DesignedTextController(hintText: "John", controller:  firstNameController),
-
-            const SizedBox(height: 20),
-
-            Text("  Middle Name (Optional)", style: theme.textTheme.titleLarge),
-
-            DesignedTextController(hintText:  "", controller:  middleNameController),
-
-            const SizedBox(height: 20),
-
-            Text("  Last Name (Optional)", style: theme.textTheme.titleLarge),
-
-            DesignedTextController(hintText: "Doe", controller:  lastNameController),
-
-            const SizedBox(height: 20),
-
-            Text("  Email", style: theme.textTheme.titleLarge),
-
-            DesignedTextController(hintText: "example@123.com", controller:  emailController),
-
-            const SizedBox(height: 20),
-
-            Text("  Password", style: theme.textTheme.titleLarge),
-
-            DesignedTextController(hintText:  "****", controller: passwordController, isPassword: true),
-
-            const SizedBox(height: 40),
-
-            Text("  Choose a profile picture (Optional)", style: theme.textTheme.titleLarge),
-
-            if(image != null) Image.file(image!,width: 300),
-
-            const SizedBox(height: 20),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: _cameraOption,
-                  child: const Icon(Icons.camera_alt, size: 100),
-                ),
-
-                const SizedBox(width: 40),
-
-                ElevatedButton(
-                  onPressed: _galleryOption,
-                  child: const Icon(Icons.image, size: 100),
-                ),
-              ],
-            ),
-
-            Align(
-              child: designedButton(context, "Register",(){
-                setState(() => regReq = true);
-                try{
-                  _handleRegAndNavigate();
-                }catch(e){
-                  displayError(context, e);
-                }
-              }),
-            ),
-
-            const SizedBox(width: 40),
-
-          ],
+        child: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+          
+              const SizedBox(height: 20),
+          
+              Text("  First Name (Optional)", style: theme.textTheme.titleLarge),
+          
+              DesignedTextController(hintText: "John", controller:  firstNameController),
+          
+              const SizedBox(height: 20),
+          
+              Text("  Middle Name (Optional)", style: theme.textTheme.titleLarge),
+          
+              DesignedTextController(hintText:  "", controller:  middleNameController),
+          
+              const SizedBox(height: 20),
+          
+              Text("  Last Name (Optional)", style: theme.textTheme.titleLarge),
+          
+              DesignedTextController(hintText: "Doe", controller:  lastNameController),
+          
+              const SizedBox(height: 20),
+          
+              Text("  Email", style: theme.textTheme.titleLarge),
+          
+              DesignedTextController(hintText: "example@123.com", controller:  emailController),
+          
+              const SizedBox(height: 20),
+          
+              Text("  Password", style: theme.textTheme.titleLarge),
+          
+              DesignedTextController(hintText:  "****", controller: passwordController, isPassword: true),
+          
+              const SizedBox(height: 40),
+          
+              Text("  Choose a profile picture (Optional)", style: theme.textTheme.titleLarge),
+          
+              if(image != null) Image.file(image!,width: 300),
+          
+              const SizedBox(height: 20),
+          
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: _cameraOption,
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.resolveWith((states){
+                        if(states.contains(WidgetState.pressed)){
+                          return theme.colorScheme.tertiary;
+                        }
+                        return theme.colorScheme.inversePrimary;
+                      }),
+                      foregroundColor:WidgetStateProperty.resolveWith((states){
+                        if(states.contains(WidgetState.pressed)){
+                          return theme.colorScheme.surface;
+                        }
+                        return theme.colorScheme.inverseSurface;
+                      }),
+                    ),
+                    child: const Icon(Icons.camera_alt, size: 100),
+                  ),
+          
+                  const SizedBox(width: 40),
+          
+                  ElevatedButton(
+                    onPressed: _galleryOption,
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.resolveWith((states){
+                        if(states.contains(WidgetState.pressed)){
+                          return theme.colorScheme.tertiary;
+                        }
+                        return theme.colorScheme.inversePrimary;
+                      }),
+                      foregroundColor:WidgetStateProperty.resolveWith((states){
+                        if(states.contains(WidgetState.pressed)){
+                          return theme.colorScheme.surface;
+                        }
+                        return theme.colorScheme.inverseSurface;
+                      }),
+                    ),
+                    child: const Icon(Icons.image, size: 100),
+                  ),
+                ],
+              ),
+          
+              Align(
+                child: designedButton(context, "Register",(){
+                  setState(() => regReq = true);
+                  try{
+                    _handleRegAndNavigate();
+                  }catch(e){
+                    displayError(context, e);
+                  }
+                }),
+              ),
+          
+              const SizedBox(width: 40),
+          
+            ],
+          ),
         ),
       ),
     );

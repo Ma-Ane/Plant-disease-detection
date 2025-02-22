@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_flutter_app/main.dart';
-import 'package:my_flutter_app/pages/util/various_assets.dart';
+import 'package:Detector/MongoDb/mongo_work.dart';
+import 'package:Detector/main.dart';
+import 'package:Detector/pages/util/various_assets.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -10,6 +11,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home>{
+  late Future<List<Widget>> children;
 
   Widget _makePost(){
     return Container(
@@ -26,23 +28,58 @@ class _HomeState extends State<Home>{
     );
   }
 
+  Widget _viewPost(Post p, Account a){
+    return Container(
+      decoration: const BoxDecoration(
+          color: Color(0x44ffffff),
+          shape: BoxShape.circle
+      ),
+      child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushNamed('/see_post', arguments: (p,a));
+          },
+          child: const Icon(Icons.info, size: 20,)
+      ),
+    );
+  }
+
   Future<List<Widget>> _getPosts() async{
     List<Widget> foo = [];
-
+    Widget tempWidget;
     try{
-      
+      List<Post> samplePosts = await Post.retreivePostList();
+      Account temp;
+      for(Post x in samplePosts){
+        if(x.accountId != null) {
+          temp = await Account.retreiveAccountoi(x.accountId!);
+        }
+        else{
+          temp = Account();
+        }
+        tempWidget = TextAndWidget(
+          name: temp.userName,
+          pic: temp.profileImage,
+          data: x.ptitle,
+          extra: _viewPost(x, temp)
+        );
+        foo.add(tempWidget);
+      }
+      return foo;
     }catch(e){
       rethrow;
     }
+  }
 
-    return foo;
+  @override
+  void initState() {
+    super.initState();
+    children = _getPosts();
   }
 
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      body: SafeArea(
+    return SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -50,15 +87,33 @@ class _HomeState extends State<Home>{
             const SizedBox(height: 20),
         
             Consumer<OnDeviceStorage>(builder: (context, userFile, _) =>
-              homeWidgets(context: context, name: userFile.userAcc.userName, pic: userFile.userAcc.profileImage, data: "Make a Post", extra: _makePost())
+                TextAndWidget(
+                    name: userFile.userAcc.userName,
+                    pic: userFile.userAcc.profileImage,
+                    data: "Make a Post",
+                    extra: _makePost()
+                )
             ),
 
             const SizedBox(height: 20),
 
+            FutureBuilder<List<Widget>>
+              (future: children, builder: (BuildContext context, AsyncSnapshot<List<Widget>> snapshot){
+              List<Widget> columnChildren = [];
+              if(snapshot.hasData){
+                columnChildren = snapshot.data!;
+              }
+              else if(snapshot.hasError){
+                columnChildren.add(Text(snapshot.error.toString()));
+              }
+              else{
+                columnChildren.add(const CircularProgressIndicator());
+              }
+              return Column(children: columnChildren);
+            })
 
           ],
         ),
-      )
     );
   }
 

@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 Future displayError(BuildContext context, Object e, [Object? details]){
   ThemeData theme = Theme.of(context);
@@ -139,4 +142,3 @@ class TextAndWidget extends StatelessWidget{
     );
   }
 }
-

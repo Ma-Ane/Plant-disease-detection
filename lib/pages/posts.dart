@@ -93,20 +93,47 @@ class _PostsState extends State<Posts>{
             if(image != null) Image.file(image!,width: 300),
         
             const SizedBox(height: 20),
-        
+
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
                   onPressed: _cameraOption,
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.resolveWith((states){
+                      if(states.contains(WidgetState.pressed)){
+                        return theme.colorScheme.tertiary;
+                      }
+                      return theme.colorScheme.inversePrimary;
+                    }),
+                    foregroundColor:WidgetStateProperty.resolveWith((states){
+                      if(states.contains(WidgetState.pressed)){
+                        return theme.colorScheme.surface;
+                      }
+                      return theme.colorScheme.inverseSurface;
+                    }),
+                  ),
                   child: const Icon(Icons.camera_alt, size: 100),
                 ),
-        
+
                 const SizedBox(width: 40),
-        
+
                 ElevatedButton(
                   onPressed: _galleryOption,
-                  //color: const Color.fromARGB(255, 63, 155, 104),
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.resolveWith((states){
+                      if(states.contains(WidgetState.pressed)){
+                        return theme.colorScheme.tertiary;
+                      }
+                      return theme.colorScheme.inversePrimary;
+                    }),
+                    foregroundColor:WidgetStateProperty.resolveWith((states){
+                      if(states.contains(WidgetState.pressed)){
+                        return theme.colorScheme.surface;
+                      }
+                      return theme.colorScheme.inverseSurface;
+                    }),
+                  ),
                   child: const Icon(Icons.image, size: 100),
                 ),
               ],
@@ -122,7 +149,7 @@ class _PostsState extends State<Posts>{
         
             designedButton(context, "Post", (){
               try{
-                _handlePost(Provider.of<OnDeviceStorage>(context).userAcc);
+                _handlePost(Provider.of<OnDeviceStorage>(context, listen: false).userAcc);
               }catch(e){
                 displayError(context, e);
               }

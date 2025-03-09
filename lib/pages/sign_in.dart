@@ -15,7 +15,6 @@ class _SignIn extends State<SignIn> with TickerProviderStateMixin<SignIn>{
   late TextEditingController emailController;
   late TextEditingController passwordController;
   late AnimationController progressController;
-  bool signInReq = false;
 
   void _handleSignInAndPush() async{
     try{
@@ -35,9 +34,7 @@ class _SignIn extends State<SignIn> with TickerProviderStateMixin<SignIn>{
         Navigator.of(context).pushReplacementNamed('/nav');
         });
       }
-      setState(() => signInReq = false);
     }catch(e){
-      setState(() => signInReq = false);
       rethrow;
     }
   }
@@ -85,9 +82,12 @@ class _SignIn extends State<SignIn> with TickerProviderStateMixin<SignIn>{
             const SizedBox(height: 20),
 
             Align(
-              child: designedButton(context, "Sign In", (){
-                setState(() => signInReq = true);
+              child: designedButton(context, "Sign In", () {
+                try{
                 _handleSignInAndPush();
+                }catch(e){
+                  displayError(context, e);
+                }
               }),
             ),
           ],

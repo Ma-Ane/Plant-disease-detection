@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -78,6 +79,8 @@ abstract class DbObject{
 }
 
 ///A class containing the information of a single user
+///I know this is bad. The database was originally only supposed to store [Diseases].
+///Accounts, posts, comments unfortunately had to be bodged together.
 Account accountFromJson(String str) => Account.fromJson((json.decode(str)));
 String accountToJson(Account data) => json.encode(data.toJson());
 
@@ -116,7 +119,8 @@ class Account extends DbObject{
       temp = null;
     }
 
-    Account x = Account(
+
+  Account x = Account(
     accountId: json["accountId"],
     firstname: json["firstname"],
     middlename: json["middlename"],
@@ -139,22 +143,27 @@ class Account extends DbObject{
     "email": email,
     "password": password,
     ///to read from bindata from mongodb
-    "pfp": pfp == null ? null : base64Encode(pfp!.readAsBytesSync()),
+    "pfp": pfp == null
+      ? null
+      : base64Encode(pfp!.readAsBytesSync()),
   };
 
-  String get userName =>
-      "${firstname??""}${middlename??""}${lastname??""}";
+  String get userName {
+    return [firstname, middlename, lastname].where((e) => e != null && e.isNotEmpty).join(" ");
+  }
 
   Widget get profileImage => pfp==null
       ?const Icon(Icons.person,size: 40,)
       :Image.file(pfp!, height: 40,);
 
+  static String _hashPassword(String pw) => sha256.convert(utf8.encode(pw)).toString();
+
   ///inserts a [Account] with the given information into the database
   static Future<void> insertAccount(String? firstName, String? middleName, String? lastName, String emailAddress, String password, File? img) async{
-    Account check = Account.fromJson(await MongoDatabase.getFromDbOne({"email": emailAddress, "password": password}));
+    Account check = Account.fromJson(await MongoDatabase.getFromDbOne({"email": emailAddress, "password": _hashPassword(password)}));
     if(check.isnull){
       var id_ = ObjectId().toJson();
-      final data = Account(accountId: id_, firstname: firstName,middlename: middleName, lastname: lastName, email: emailAddress,password: password, pfp: img);
+      final data = Account(accountId: id_, firstname: firstName,middlename: middleName, lastname: lastName, email: emailAddress,password: _hashPassword(password), pfp: img);
       try{
         await MongoDatabase.insertToDb(data);
         }catch(e){
@@ -170,6 +179,8 @@ class Account extends DbObject{
   static Future<void> modifyAccount(Account a) async{
     try {
       if (a.accountId == null) throw "Account doesnt exist";
+      if(a.password == null) throw "Pw is null";
+      a.password = _hashPassword(a.password!);
       Account check = await retreiveAccountoi(a.accountId!);
       if (check.isnull) return;
       await MongoDatabase.replaceOneToDb(
@@ -183,7 +194,7 @@ class Account extends DbObject{
   static Future<Account> retreiveAccountep(String emailAddress, String password) async{
     Account val = Account();
     try{
-      val = Account.fromJson(await MongoDatabase.getFromDbOne({"email": emailAddress, "password": password}));
+      val = Account.fromJson(await MongoDatabase.getFromDbOne({"email": emailAddress, "password": _hashPassword(password)}));
     }catch(e){
       rethrow;
     }
@@ -309,7 +320,6 @@ class Comment extends DbObject{
   String? postId;
   String? accountId;
   String? cdescription;
-  String? posid;
   bool isnull;
 
   Comment({
@@ -317,7 +327,6 @@ class Comment extends DbObject{
     this.postId,
     this.accountId,
     this.cdescription,
-    this.posid,
     this.isnull = true,
   });
 
@@ -329,7 +338,6 @@ class Comment extends DbObject{
         postId: json["postId"],
         accountId: json["accountId"],
         cdescription: json["cdescription"],
-        posid: json["posid"],
         isnull: false
       );
     }
@@ -342,13 +350,12 @@ class Comment extends DbObject{
     "postId": postId,
     "accountId": accountId,
     "cdescription": cdescription,
-    "posid": posid,
   };
 
   ///inserts a [Comment] into the database
-  static Future<void> insertComment( String id_, String piid, String desc, String positionid) async{
+  static Future<void> insertComment( String id_, String piid, String desc) async{
     var ciid = ObjectId().toJson();
-    final data = Comment(commentId: ciid, accountId: id_, postId: piid,cdescription: desc, posid: positionid);
+    final data = Comment(commentId: ciid, accountId: id_, postId: piid,cdescription: desc);
     try{
       MongoDatabase.insertToDb(data);
     }catch(e){
@@ -356,11 +363,13 @@ class Comment extends DbObject{
     }
   }
 
-  ///retreives a comment with the given [accountId], [postId] and [commentId]
-  static Future<Comment> retreiveCommentapc(String accountId, String postId, String commentId) async{
-    Comment val = Comment();
+  static Future<List<Comment>> retreiveCommentap(String accountId, String postId) async{
+    List<Comment> val = [];
     try{
-      val = Comment.fromJson(await MongoDatabase.getFromDbOne({"accountId": accountId, "postId": postId, "commentId": commentId}));
+      var x = await MongoDatabase.getFromDb({"accountId": accountId, "postId": postId});
+      for(var y in x){
+        val.add(Comment.fromJson(y));
+      }
     }catch(e){
       rethrow;
     }
@@ -376,6 +385,7 @@ class Disease extends DbObject {
   int? jsonId;
   String? ddescription;
   File? dimg;
+  String? soln;
   bool isnull;
 
   @override
@@ -388,6 +398,7 @@ class Disease extends DbObject {
     this.jsonId,
     this.ddescription,
     this.dimg,
+    this.soln,
     this.isnull= true,
   });
 
@@ -405,6 +416,7 @@ class Disease extends DbObject {
         jsonId: json["jsonId"],
         ddescription: json["ddescription"],
         dimg: temp,
+        soln: json["soln"],
         isnull: false
       );
     }
@@ -416,9 +428,15 @@ class Disease extends DbObject {
     "dname": dname,
     "jsonId": jsonId,
     "ddescription": ddescription,
-    "dimg": dimg==null?null:base64Encode((dimg?.readAsBytesSync())!)
+    "dimg": dimg==null?null:base64Encode((dimg?.readAsBytesSync())!),
+    "soln": soln
   };
 
+  @override
+  bool operator ==(Object other) => other is Disease && other.dname == dname;
+
+  @override
+  int get hashCode => dname.hashCode;
 
   Widget? get diseaseImage => dimg==null
       ? null

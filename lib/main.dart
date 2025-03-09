@@ -1,6 +1,8 @@
 import 'dart:io';
 
-import 'package:Detector/pages/see_Post.dart';
+import 'package:Detector/pages/add.dart';
+import 'package:Detector/pages/make_comment.dart';
+import 'package:Detector/pages/see_post.dart';
 import 'package:flutter/material.dart';
 import 'package:Detector/MongoDb/mongo_work.dart';
 import 'package:Detector/pages/app_entry.dart';
@@ -66,7 +68,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
     Brightness brightness = MediaQuery.of(context).platformBrightness;
     return MaterialApp(
       title: 'Crop Disease Detection',
@@ -86,6 +87,8 @@ class MyApp extends StatelessWidget {
         '/contactus': (context) => const ContactUs(),
         '/settings': (context) => const Settings(),
         '/see_post': (context) => const SeePost(),
+        '/make_comment': (context) => const MakeComment(),
+        '/add': (context) => const Add(),
       },
     );
   }

@@ -15,7 +15,7 @@ class ContactUs extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            TextAndWidget(name: "Ishan Ghimire", data: "number: 9862108466\nemail: ishangh64@gmail.com")
+            TextAndWidget(name: "Ishan Ghimire", data: "Number: 9862108466\nEmail: ishangh64@gmail.com")
           ],
         )
       ),

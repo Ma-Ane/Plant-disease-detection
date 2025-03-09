@@ -17,7 +17,7 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register>{
 
   File? image;
-  bool regReq = false;
+
 
   late TextEditingController firstNameController;
   late TextEditingController middleNameController;
@@ -52,11 +52,7 @@ class _RegisterState extends State<Register>{
       else{
         throw "This Account Already exists";
       }
-
-      setState(() => regReq = false);
-
     }catch(e){
-      setState(() => regReq = false);
       rethrow;
     }
 
@@ -81,8 +77,6 @@ class _RegisterState extends State<Register>{
       });
     }
   }
-
-
 
   @override
   void initState(){
@@ -203,7 +197,6 @@ class _RegisterState extends State<Register>{
           
               Align(
                 child: designedButton(context, "Register",(){
-                  setState(() => regReq = true);
                   try{
                     _handleRegAndNavigate();
                   }catch(e){

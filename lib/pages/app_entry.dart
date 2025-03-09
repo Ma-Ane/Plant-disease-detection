@@ -41,6 +41,11 @@ class AppEntry extends StatelessWidget {
               Navigator.pushNamed(context, '/search');
             }
           ),
+
+          designedButton(context, "Add", () {
+            Navigator.pushNamed(context, '/add');
+          }
+          ),
         ],
       )
     );
